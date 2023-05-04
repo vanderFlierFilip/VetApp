@@ -1,0 +1,193 @@
+@{
+    @model AddPetViewModel
+}
+<form method="post" asp-action="AddNewPet">
+    <input asp-for="OwnerId" hidden / >
+    <div id="addNewPetModal" class="modal " tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Нов миленик</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-row mb-5">
+                        <div class="col">
+                            <label class="col col-form-label font-weight-bold">Име:</label>
+                            <div class="col">
+                                <input type="text" class="form-control" asp-for="Pet.Name" >
+                                <span asp-validation-for="Pet.Name" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label class="col col-form-label font-weight-bold">Број на чип:</label>
+                            <div class="col">
+                                <input type="text" class="form-control" asp-for="Pet.ChipNumber">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label class="col col-form-label font-weight-bold">Датум на раѓање:</label>
+                            <div class="col ">
+                                @Html.EditorFor(m => m.Pet.DateOfBirth, new {htmlAttributes = new { @class="datepicker form-control",
+                                @id="datepicker"}})
+                                <span asp-validation-for="Pet.DateOfBirth" class="text-danger"></span>
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <hr>
+                    <div class="form-row mb-5">
+                        <div class="col">
+                            <label class="col col-form-label font-weight-bold">Врста:</label>
+                            <div class="col">
+                                <select id="species" asp-items="@Model.SpeciesList" asp-for="Pet.SpeciesId" class="form-control">
+                                <span asp-validation-for="Pet.SpeciesId" class="text-danger"></span>
+                                    <option></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label class="col col-form-label font-weight-bold">Раса:</label>
+                            <div class="col">
+                                <select id="breed" asp-for="Pet.BreedId" class="form-control"></select>
+                                <span asp-validation-for="Pet.BreedId" class="text-danger"></span>
+
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <label class="col col-form-label font-weight-bold">Пол:</label>
+                            <div class="col">
+                                <select asp-items="@Model.AnimalSexOptions" asp-for="Pet.Sex" class="form-control"></select>
+                                <span asp-validation-for="Pet.Sex" class="text-danger"></span>
+
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label class="col col-form-label font-weight-bold">Алергија:</label>
+                            <div class="col">
+                                <input type="text" class="form-control" asp-for="Pet.Alergy">
+                            </div>
+                        </div>
+                    <hr>
+
+                    </div>
+                    <div class="form-row mb-5">
+                        <div class="col">
+                            <label class="col col-form-label font-weight-bold">Опис:</label>
+                            <div class="col">
+                                <textarea type="text" class="form-control" asp-for="Pet.Description"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Затвори</button>
+                    <input type="submit" class="btn btn-success" value="Зачувај" />
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#species").change(function () {
+            getTypeBreedsByTypeId();
+        });
+        $(document).ready(function () {
+            $(".datepicker").datepicker("show");
+        });
+        var getTypeBreedsByTypeId = function () {
+            $.ajax({
+                url: '@Url.Action("GetSpeciesBreedsAsSelectList")',
+                type: 'GET',
+                data: {
+                    speciesId: $('#species').val(),
+                },
+                success: function (data) {
+                    $('#breed').find('option').remove()
+                    $(data).each(
+                        function (index, item) {
+                            $('#breed').append('<option value="' + item.id + '">' + item.name + '</option>')
+                        });
+                },
+                error: function () {
+                }
+            });
+        }
+    })
+</script>
+
+
+
+@* <div class="form-row">
+    <div class="col">
+    <label class="col col-form-label font-weight-bold">Име:</label>
+    <div class="col">
+    <input type="text" class="form-control" asp-for="Pet.Name">
+    </div>
+    </div>
+    <div class="col">
+    <label class="col col-form-label font-weight-bold" >Број на чип:</label>
+    <div class="col">
+    <input type="text" class="form-control" asp-for="Pet.ChipNumber">
+    </div>
+    </div>
+    <div class="col">
+    <label class="col col-form-label font-weight-bold">Датум на раѓање:</label>
+    <div class="col ">
+    @Html.EditorFor(m => m.Pet.DateOfBirth, new {htmlAttributes = new { @class="datepicker form-control",
+    @id="datepicker"}})
+    </div>
+    </div>
+    </div>
+
+    </div>
+    <div class="form-row mt-5">
+    <div class="col">
+    <label class="col col-form-label font-weight-bold">Врста:</label>
+    <div class="col">
+    <select id="animalType" asp-items="@Model.AnimalTypes" asp-for="Pet.AnimalTypeId" class="form-control"></select>
+
+    </div>
+    </div>
+    <div class="col">
+    <label class="col col-form-label font-weight-bold">Раса:</label>
+    <div class="col">
+    <select id="breed" asp-for="Pet.BreedId" class="form-control"></select>
+    </div>
+    </div>
+    <div class="col">
+        <label class="col col-form-label font-weight-bold">Пол:</label>
+        <div class="col">
+        <select asp-items="@Model.AnimalSexOptions" asp-for="Pet.Sex" class="form-control"></select>
+
+        </div>
+    </div>
+    <div class="form-row">
+
+
+    <div class="col">
+    <label class="col col-form-label font-weight-bold">Алергија:</label>
+    <div class="col">
+    <input type="text" class="form-control" asp-for="Pet.Alergy">
+    </div>
+    </div>
+    </div>
+    </div>
+
+    <label class="col col-form-label font-weight-bold">Опис:</label>
+    <div class="col">
+
+    <input type="text" class="form-control" asp-for="Pet.Description">
+    </div>
+    <div class="col mt-5">
+    <input type="submit" class="btn btn-success" value="Додади миленик" />
+    </div> *@

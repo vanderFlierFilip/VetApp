@@ -1,0 +1,39 @@
+@using VDMJasminka.Core.Entities
+@{
+
+    @model SupplierModel
+}
+<div class="row navbar navbar-light bg-light mb-3">
+    <h3>Измени податоци за добавувач @Model.Name</h3>
+</div>
+<div class="container">
+    <div class="form-group row">
+        <form method="post" asp-action="EditSupplier">
+            @Html.HiddenFor(model => model.Id)
+
+            <label class="col col-form-label font-weight-bold">Име</label>
+            <div class="col">
+                <input type="text" class="form-control" asp-for="Name">
+            </div>
+            <label class="col col-form-label font-weight-bold">Адреса</label>
+            <div class="col">
+                <input type="text" class="form-control" asp-for="Address">
+            </div>
+            <label class="col col-form-label font-weight-bold">Град:</label>
+            <div class="col">
+                <input type="text" class="form-control" asp-for="Location">
+            </div>
+            <label class="col col-form-label font-weight-bold">Телефонски број</label>
+            <div class="col">
+                <input type="text" class="form-control" asp-for="PhoneNumber">
+            </div>
+            <hr />
+            <div class="col mt-2">
+                <input type="submit" class="btn btn-success" value="Зачувај" />
+                <a class="btn btn-danger" href="javascript:history.go(-1)">Назад</a>
+            </div>
+
+        </form>
+    </div>
+
+</div>

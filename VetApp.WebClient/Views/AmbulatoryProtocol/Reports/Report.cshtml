@@ -1,0 +1,151 @@
+﻿@using VDMJasminka.Application.Ambulance.Queries
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    string checkupType = "";
+    if (@Model.Checkup.CheckupType == CheckupCategory.Surgery)
+    {
+        checkupType = "Операција";
+    }
+    if (@Model.Checkup.CheckupType == CheckupCategory.Chipping)
+    {
+        checkupType = "Чипување";
+    }
+    if (@Model.Checkup.CheckupType == CheckupCategory.Treatment)
+    {
+        checkupType = "Лечење";
+    }
+
+    if (@Model.Checkup.CheckupType == CheckupCategory.Vaccine)
+    {
+        checkupType = "Вакцинација";
+    }
+}
+@{
+    @model CheckupReportViewModel
+    ViewData["Title"] = "Извештај";
+}
+<partial name="_SubHeader" view-data="ViewData"></partial>
+
+<div class="container pt-5">
+    <div class="card w-75 shadow bg-white rounded ">
+        <div class="card-header bg-success text-light">
+            <h4>@checkupType на @Model.Pet.Name</h4>
+        </div>
+        <div class="card-body">
+            @if (!string.IsNullOrEmpty(Model.Checkup.Anamnesis))
+            {
+                <div class="row py-1">
+                    <div class="col-3 font-weight-bold">
+                        Анамнеза:
+                    </div>
+                    <div class="col-9">@Model.Checkup.Anamnesis</div>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.Checkup.ClinicalPicture))
+            {
+                <div class="row py-1">
+                    <div class="col-3 font-weight-bold">Клиничка слика:</div>
+                    <div class="col-9">@Model.Checkup.ClinicalPicture</div>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.Checkup.Diagnosis))
+            {
+                <div class="row py-1">
+                    <div class="col-3 font-weight-bold">Дијагноза:</div>
+                    <div class="col-9">@Model.Checkup.Diagnosis</div>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.Checkup.Advice))
+            {
+                <div class="row py-1">
+                    <div class="col-3 font-weight-bold">Препорака:</div>
+                    <div class="col-9">@Model.Checkup.Advice</div>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.Checkup.Therapy))
+            {
+                <div class="row py-1">
+                    <div class="col-3 font-weight-bold">Препорачана терапија:</div>
+                    <div class="col-9">@Model.Checkup.Therapy</div>
+                </div>
+            }
+            @if (Model.Checkup.CheckupDetails.Any())
+            {
+                <div class="row py-1">
+                    <div class="col-3 font-weight-bold">Терапија:</div>
+                    <div class="col-9">
+                        @foreach (var item in @Model.Checkup.CheckupDetails)
+                        {
+                            <div class="row pl-3">
+                                @item.Amount @item.Uom, @item.MedicamentName, @item.MedicamentApplication
+
+                            </div>
+                        }
+                    </div>
+
+                </div>
+            }
+            @if (Model.Checkup.NextControlCheckup.HasValue)
+            {
+                <div class="row py-1">
+                    <div class="col-3 font-weight-bold">Контролен преглед:</div>
+                    <div class="col-9">@Model.Checkup.NextControlCheckup.Value.ToShortDateString()</div>
+                </div>
+            }
+            @if (Model.Checkup.NextVaccinationDate.HasValue)
+            {
+                <div class="row py-1">
+                    <div class="col-3 font-weight-bold">Наредна вакцинација:</div>
+                    <div class="col-9">@Model.Checkup.NextVaccinationDate.Value.ToShortDateString()</div>
+                </div>
+            }
+            <hr />
+            <div class="row py-1">
+                <div class="col-3 font-weight-bold">Наплатено:</div>
+                @if (Model.Checkup.PaidSum != null)
+                {
+                    <div class="col-3">@Model.Checkup.PaidSum ден</div>
+                }
+                else
+                {
+                    <div class="col-3">0 ден</div>
+                }
+
+            </div>
+            <div class="d-flex justify-content-end">
+                <div class="float-right mr-2">
+                   
+                    <button type="button" class="btn btn-secondary" onclick="downloadPdf(@Model.Owner.Id, @Model.Pet.Id, @Model.Checkup.Id)">Преземи PDF</button>
+                </div>
+                <button class="btn btn-primary" onclick="navigateToRecord(@Model.Owner.Id, @Model.Pet.Id)">Продолжи</button>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+    function downloadPdf(ownerId, petId, checkupId) {
+        const url = "@Url.Action("DownloadReport")?ownerId=" + ownerId + "&petId=" + petId + "&checkupId=" + checkupId;
+        window.open(url)
+    }
+
+    function navigateToRecord(ownerId, petId) {
+        $.ajax({
+            method: 'POST',
+            url: '@Url.Action("FuckOffToPetDetials", "PetDetailsPage")',
+            data: {
+                ownerId: ownerId,
+                petId: petId
+            },
+            success: function (data) {
+                window.location.href = data;
+            }
+
+        })
+    }
+</script>

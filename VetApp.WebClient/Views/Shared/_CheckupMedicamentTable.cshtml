@@ -1,0 +1,281 @@
+@using VDMJasminka.Core.Ambulance.OwnerAggregate
+
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    @model IEnumerable<CheckupItem>
+
+}
+
+<h5>Терапија</h5>
+<form></form>
+<table class="table table-sm table-borderless" id="checkupTable">
+    <thead>
+        <tr>
+            <th>
+                Лек
+            </th>
+
+            <th>
+                Количина
+            </th>
+            <th>
+                Цена
+            </th>
+
+        </tr>
+
+    </thead>
+    <tbody>
+        @foreach (CheckupItem checkup in @Model)
+        {
+            <tr>
+                <td>
+                    <select id="selectMedicament" class="select-med form-control" asp-for="@checkup.MedicamentId">
+                    </select>
+                </td>
+                <td>
+                    <input type="number" id="amount" class="form-control" value="1" min="1"/>
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+<button class="btn btn-primary btn-sm" id="newRowBtn">Додади</button>
+<button class="btn btn-primary btn-sm" id="submitBtn">Ajmo</button>
+
+
+<script>
+
+    const table = document.getElementById("checkupTable");
+    const firstRow = table[0];
+    let medicaments = [];
+    document.onload = loadMedicaments();
+    const newRowBtn = document.getElementById("newRowBtn")
+    const medSelects = Array.from(document.getElementsByClassName("select-med"));
+    let firstSelectValue = 0;
+
+
+    const submitBtn = document.getElementById("submitBtn").addEventListener('click', () => {
+        const medsTable = document.getElementById("checkupTable");
+
+        tableToJson(medsTable);
+    })
+
+    newRowBtn.addEventListener('click', () => {
+
+        const newRow = table.insertRow(-1)
+        const newCell = newRow.insertCell(-1)
+        const select = addMedicamentDropdown(newCell);
+        const [selectedMed] = medicaments.filter(x => x.id === parseInt(select.value));
+
+
+        const nextCell = newRow.insertCell(-1);
+        addPriceTagToTableCell(nextCell, selectedMed.price)
+        addAndHandleChange(select, newRow)
+        addDeleteButton(newRow);
+        addAmountInput(newRow);
+    })
+
+    function addMedicamentDropdown(newCell) {
+        const select = document.createElement("select");
+        select.classList.add("select-med")
+        select.classList.add("form-control")
+
+        select.id = "selectMedicament"
+        populateDropdownWithArray(select, medicaments);
+
+        newCell.appendChild(select);
+        console.log(select);
+        return select;
+
+    }
+    function addAndHandleChange(el, cell) {
+        el.addEventListener("change", (e) => {
+            const medId = parseInt(e.target.value);
+            const [newMed] = medicaments.filter(x => x.id === medId);
+
+            addPriceTagToTableCell(cell, newMed.price);
+
+        })
+    }
+    function addDeleteButton(row) {
+        const newBtn = document.createElement("button")
+        const nextCell = row.insertCell(-1);
+
+        newBtn.className = "close"
+        newBtn.innerHTML = "&times;"
+        newBtn.style.color = "red"
+        newBtn.style.fontSize = "30px"
+        nextCell.style.textAlign = "center"
+
+        nextCell.append(newBtn)
+
+        newBtn.addEventListener('click', () => {
+            rowIdx = newBtn.parentNode.parentNode.rowIndex;
+            table.deleteRow(rowIdx);
+        })
+
+
+    }
+
+    function addAmountInput(row) {
+
+        const amountInput = document.createElement("input");
+        const nextCell = row.insertCell(1);
+
+        amountInput.type = "number"
+        amountInput.className = "form-control";
+        amountInput.value = 1;
+        amountInput.min = 1;
+
+        nextCell.append(amountInput);
+        const priceTag = row.querySelector("#priceTag");
+        const medSelect = row.querySelector("#selectMedicament");
+        handleAmountChangeToChangePrice(amountInput, priceTag, medSelect)
+
+    }
+
+    function handleAmountChangeToChangePrice(amountInput, priceTag, medSelect) {
+        let previousAmount = amountInput.value;
+        let singularPrice = parseFloat(priceTag.innerHTML);
+
+
+        medSelect.addEventListener('change', () => {
+            singularPrice = parseFloat(priceTag.innerHTML);
+            amountInput.value = 1;
+            previousAmount = amountInput.value
+        })
+        amountInput.addEventListener('change', (e) => {
+
+            const priceTagValue = parseFloat(priceTag.innerHTML);
+            const currentAmount = parseInt(e.target.value);
+
+            if (previousAmount < currentAmount) {
+                const newPrice = (priceTagValue + singularPrice).toFixed(2);
+                priceTag.innerHTML = getPriceTag(newPrice);
+            } else {
+                const newPrice = (priceTagValue - singularPrice).toFixed(2);
+                priceTag.innerHTML = getPriceTag(newPrice);
+            }
+            previousAmount = currentAmount;
+        })
+
+    }
+
+    function addPrice(row) {
+
+        const selects = Array.from(document.getElementsByClassName("select-med"));
+        selects.forEach(el => {
+            if (el.value) {
+                const medId = el.value;
+                const [med] = medicaments.filter(x => x.id === +medId);
+                const priceDiv = document.createElement("div");
+                priceDiv.innerHTML = med.price;
+                console.log(priceDiv)
+                newRow.insertCell(1).appendChild(priceDiv);
+            }
+        })
+
+
+    }
+    function loadMedicaments() {
+        fetch('@Url.Action("GetMedicaments","AmbulatoryProtocol")').then(res => {
+            if (!res.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return res.json();
+
+        }).then(data => {
+            let select = document.getElementById("selectMedicament");
+            medicaments = data;
+            populateDropdownWithArray(select, medicaments);
+
+            const table = document.getElementById("checkupTable");
+            const firstRow = table.rows[1];
+            const selected = document.getElementById("selectMedicament");
+            const [firstEl] = medicaments.filter(x => x.id === parseInt(selected.value));
+            const firstCell = firstRow.insertCell(-1);
+
+            addPriceTagToTableCell(firstCell, firstEl.price);
+
+            selected.addEventListener("change", (e) => {
+                const medId = e.target.value
+                const [newMed] = medicaments.filter(x => x.id === parseInt(medId));
+
+                addPriceTagToTableCell(firstCell, newMed.price);
+
+            })
+        })
+    }
+    function populateDropdownWithArray(dropdown, array) {
+        array.forEach(item => {
+            if (!item || !item.id && !item.name) {
+                throw new Error("Array item value for name or id or item is null");
+            }
+
+            var option = document.createElement("option");
+            option.value = item.id
+            option.text = item.name
+            dropdown.append(option)
+        })
+    }
+
+
+    function addPriceTagToTableCell(tableCell, price) {
+        if (!tableCell.querySelector('#priceTag')) {
+
+            const div = document.createElement("div")
+
+            div.innerHTML = getPriceTag(price);
+            div.id = "priceTag";
+            tableCell.appendChild(div);
+        }
+        let priceTagEl = tableCell.querySelector("#priceTag");
+
+        priceTagEl.innerHTML = getPriceTag(price);
+    }
+
+    function PriceTag(price) {
+        this.priceTag = `${price} ден`;
+
+    }
+
+    function getPriceTag(price) {
+        return `${price} ден`;
+    }
+
+
+    function getCheckupTable() {
+        return document.getElementById("checkupTable");
+    }
+
+
+    function tableToJson(table) {
+        for (var i = 1; i < table.rows.length; i++) {
+
+            const tableRow = table.rows[i];
+            let medId = {};
+            for (let j = 0; j < tableRow.cells.length; j++) {
+
+                const select = tableRow.cells[j].querySelector("#selectMedicament");
+                if (select) medId.id = select.value;
+            }
+
+            fetch('@Url.Action("SaveCheckupDetails","AmbulatoryProtocol")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(medId),
+            })
+
+
+        }
+    }
+
+
+
+</script>

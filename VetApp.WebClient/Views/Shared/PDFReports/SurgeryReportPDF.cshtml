@@ -1,0 +1,222 @@
+﻿@using VDMJasminka.WebClient.Models.BaseViewModels
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    @model SurgeryReportViewModel
+}
+<div class="container pt-3">
+<div class="row mb-3">
+    <div class="col" style="width: 50%">
+
+        <h3>Податоци за миленик</h3>
+
+        <div class="row py-1">
+            <div class="col col-3 font-weight-bold" style="text-align:left">Име:</div>
+            <div class="col col-8" style="text-align:left">@Model.Pet.Name</div>
+        </div>
+        <div>
+        </div>
+        @if (Model.Pet.Species != null)
+        {
+            <div class="row py-1">
+                <div class="col col-3 font-weight-bold" style="">Раса:</div>
+                <div class="col col-8" style="text-align:left">@Model.Pet.Species.Name</div>
+            </div>
+        }
+        @if (Model.Pet.AnimalBreed != null)
+        {
+            <div class="row py-1">
+                <div class="col col-3 font-weight-bold" style="">Врста:</div>
+                    <div class="col col-8" style="text-align:left">@Model.Pet.AnimalBreed.Name</div>
+            </div>
+        }
+        @if (Model.Pet.Sex != null)
+        {
+            <div class="row py-1">
+                <div class="col col-3 font-weight-bold" style="">Пол:</div>
+                <div class="col col-8" style="text-align:left">@(@Model.Pet.Sex == "M" ? "Mашко" : "Женско")</div>
+            </div>
+        }
+        @if (Model.Pet.DateOfBirth != null)
+        {
+            <div class="row py-1">
+                <div class="col col-3 font-weight-bold" style="">Датум на раѓање:</div>
+                <div class="col col-8" style="text-align:left">@Model.Pet.DateOfBirth.Value.ToShortDateString()</div>
+            </div>
+        }
+        <div class="row py-1">
+            <div class="col col-3 font-weight-bold" style="">Старост:</div>
+            <div class="col col-8" style="text-align:left">@Model.Pet.AccurateAge</div>
+        </div>
+        @if (Model.Pet.Alergy != null)
+        {
+            <div class="row py-1">
+                <div class="col col-3 font-weight-bold" style="">Алергии:</div>
+                <div class="col col-8" style="text-align:left">@Model.Pet.Alergy</div>
+            </div>
+        }
+        @if (!Model.Pet.LastCheckup.HasValue)
+        {
+            <div class="row py-1">
+                <div class="col col-3 font-weight-bold" style="">Последна посета:</div>
+                <div class="col col-8" style="text-align:left">@Model.Pet.LastCheckup</div>
+            </div>
+        }
+
+        @if (Model.Pet.ChipNumber != null)
+        {
+            <div class="row py-1">
+                <div class="col col-3 font-weight-bold" style="">Број на чип:</div>
+                <div class="col col-8" style="text-align:left">@Model.Pet.ChipNumber</div>
+            </div>
+        }
+
+    </div>
+    <div class="col" style="width: 50%">
+        <h3>Податоци за сопственик</h3>
+        <div class="row py-1">
+            <div class="col col-4 font-weight-bold" style="text-align:left">Ине и преиме</div>
+            <div class="col col-8" style="text-align:left">@Model.Owner.FullName</div>
+        </div>
+        @if (!string.IsNullOrEmpty(Model.Owner.Address))
+        {
+            <div class="row py-1">
+                <div class="col col-4 font-weight-bold" style="">Адреса</div>
+                <div class="col col-8" style="text-align:left">@Model.Owner.Address</div>
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(Model.Owner.Location))
+        {
+            <div class="row py-1">
+                <div class="col col-4 font-weight-bold" style="">Место</div>
+                <div class="col col-8" style="text-align:left">@Model.Owner.Location</div>
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(Model.Owner.PhoneNumber))
+        {
+            <div class="row py-1">
+                <div class="col col-4 font-weight-bold" style="">Тел. број</div>
+                <div class="col col-8" style="text-align:left">@Model.Owner.PhoneNumber</div>
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(Model.Owner.Municipality))
+        {
+            <div class="row py-1">
+                <div class="col col-4 font-weight-bold" style="">Општина</div>
+                <div class="col col-8" style="text-align:left">@Model.Owner.Municipality</div>
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(Model.Owner.Email))
+        {
+            <div class="row py-1">
+                <div class="col col-4 font-weight-bold" style="">Емаил</div>
+                <div class="col col-8" style="text-align:left">@Model.Owner.Email</div>
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(Model.Owner.SSN))
+        {
+            <div class="row py-1">
+                <div class="col col-4 font-weight-bold" style="">ЕМБГ</div>
+                <div class="col col-8" style="text-align:left">@Model.Owner.SSN</div>
+            </div>
+        }
+
+
+    </div>
+</div>
+<hr />
+<div>
+    @if (!string.IsNullOrEmpty(Model.Anamnesis))
+    {
+        <div class="row py-1">
+            <div class="col col-2 font-weight-bold">
+                Анамнеза:
+            </div>
+            <div class="col col-10">@Model.Anamnesis</div>
+        </div>
+    }
+    @if (Model.NextVaccinationDate.HasValue)
+    {
+        <div class="row py-1">
+            <div class="col col-4 font-weight-bold">
+                Наредена вакцинација:
+            </div>
+            <div class="col col-8">@Model.NextVaccinationDate.Value.ToShortDateString()</div>
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(Model.ClinicalPicture))
+    {
+        <div class="row py-1">
+            <div class="col col-2 font-weight-bold">Клиничка слика:</div>
+            <div class="col col-10">@Model.ClinicalPicture</div>
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(Model.Diagnosis))
+    {
+        <div class="row py-1">
+            <div class="col col-2 font-weight-bold">Дијагноза:</div>
+            <div class="col col-10">@Model.Diagnosis</div>
+        </div>
+
+    }
+    @if (!string.IsNullOrEmpty(Model.Advice))
+    {
+        <div class="row py-1">
+            <div class="col col-2 font-weight-bold">Препорака:</div>
+            <div class="col col-10">@Model.Advice</div>
+        </div>
+    }
+    <div class="col col-2 font-weight-bold py-1">Терапија:</div>
+
+    @if (!string.IsNullOrEmpty(Model.Therapy))
+    {
+        <div class="row py-1">
+            <div class="col col-10">@Model.Therapy</div>
+        </div>
+    }
+
+    @if (Model.CheckupDetails.Any())
+    {
+        foreach (var item in @Model.CheckupDetails)
+        {
+            <div class="row px-5">
+                @item.Amount @item.Uom, @item.MedicamentName, @item.MedicamentApplication
+            </div>
+        }
+    }
+    
+    @if (Model.NextControlCheckup.HasValue) 
+    {
+        <div class="row py-1 mt-1">
+            <div class="col col-3 font-weight-bold">Контролен преглед:</div>
+            <div class="col col-9">@Model.NextControlCheckup.Value.ToShortDateString() - <i>За точен термин претходно контактирајте ја ординацијата</i></div>
+        </div>
+    }
+    <hr />
+     <div class="row py-1">
+        <div class="col col-2 font-weight-bold">Наплатено:</div>
+        @if (Model.PaidSum != null) 
+        {
+            <div class="col col-10">@Model.PaidSum ден</div>
+        }
+        else 
+        {
+            <div class="col col-10">0 ден</div>
+        }
+    </div>
+    <br />
+    <br />
+    <br />
+    <br />
+      
+     <div class="row mr-4 mt-5">
+            <div class="col float-right" style="height: 20px; width: 30px; border-bottom: 1px solid black">
+                <hr />
+            </div>
+            <h4>
+                Др. Јасминнка ван дер Флиер
+            </h4>
+    </div>
+</div>
+</div>

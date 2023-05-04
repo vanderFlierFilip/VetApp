@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Appointments\**" />
+    <EmbeddedResource Remove="Appointments\**" />
+    <None Remove="Appointments\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\VDMJasminka.Data\VDMJasminka.Data.csproj" />
+    <ProjectReference Include="..\VDMJasminka.Shared\VDMJasminka.Shared.csproj" />
+  </ItemGroup>
+	<ItemGroup>
+		<None Remove="libwkhtmltox.dll" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="libwkhtmltox.dll">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="QuestPDF" Version="2202.8.2" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.26.0" />
+		<PackageReference Include="Haukcode.WkHtmlToPdfDotNet" Version="1.5.82" />
+	  <PackageReference Include="MediatR" Version="10.0.1" />
+	</ItemGroup>
+
+</Project>

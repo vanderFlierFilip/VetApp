@@ -1,0 +1,143 @@
+@*@using VDMJasminka.Application.Inventory;
+@using X.PagedList
+@using X.PagedList.Web.Common
+@using X.PagedList.Mvc.Core
+@{
+    @model IEnumerable<InventoryStateObject>
+ViewData["Title"] = "Инвентар";
+    var pagedList = (IPagedList)ViewBag.PageList;
+}
+<div class="row navbar navbar-light bg-light mb-3">
+    <h3>@ViewData["Title"]</h3>
+</div>
+<div id="modalPlaceholder"></div>
+<div class="row-12">
+    
+    <form asp-action="Inventory" method="get" class="col-6">
+        <div class="form-actions mb-2">
+            <div class="col-6">
+                <p>
+                    Пребарај по име: <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]"
+                        class="form-control" />
+                </p>
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">Пребарај</button> |
+                <a asp-action="Medicaments" asp-route-pageNumber=1>Прикажи цела листа</a>
+            </div>
+        </div>
+    </form>
+
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>
+                    Име
+                </th>
+                <th>
+                    Минимална состојба
+                </th>
+
+                <th>
+                    Моментална состојба
+                </th>
+                <th>
+                    Единица мера
+                </th>
+                <th>
+                    Добавувач
+                </th>
+                <th>
+                    Материјал
+                </th>
+                <th>
+                    Акции
+                </th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (InventoryStateObject b in ViewBag.PageList)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => b.Medicament.Name)
+                    </td>
+
+
+                    <td>
+                        <b>
+
+                            @Html.DisplayFor(modelItem => b.Medicament.MinimalAmount)
+                        </b>
+                    </td>
+                    @{
+                        if (@b.CurrentAmountInInventory < b.Medicament.MinimalAmount)
+                        {
+                            <td class="text-danger">
+                                <b>
+                                    @Html.DisplayFor(modelItem => b.CurrentAmountInInventory)
+                                </b>
+                            </td>
+                        }
+                        else if (@b.CurrentAmountInInventory <= b.Medicament.MinimalAmount + 2)
+                        {
+                            <td class="text-warning">
+                                  <b>
+                                    @Html.DisplayFor(modelItem => b.CurrentAmountInInventory)
+                                </b>
+                            </td>
+                        }
+                        else
+                        {
+                            <td class="text-success">
+                                  <b>
+                                    @Html.DisplayFor(modelItem => b.CurrentAmountInInventory)
+                                </b>
+                            </td>
+                        }
+                    }
+
+                    <td>
+                        @Html.DisplayFor(modelItem => b.Medicament.Uom)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => b.Supplier.Name)
+                    </td>
+                    <td>
+                        @{
+                            var material = (bool)b.Medicament.IsMaterial;
+                            @Html.CheckBoxFor(modelItem => material, new {@onclick="return false"})
+                        }
+
+                    </td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <a class="btn btn-primary btn-sm" id="notImplemented" onclick=featureNotImplementedYet();>
+                                Детали
+                            </a>
+
+                            <a class="btn btn-success btn-sm" asp-action="EditMedicament">
+                                Промени
+                            </a>
+                        </div>
+                    </td>
+
+                </tr>
+            }
+
+        </tbody>
+    </table>
+
+    @Html.PagedListPager(
+    pagedList,
+    pageNumber => Url.Action("Inventory", new { pageNumber , searchString = ViewBag.Search }),
+    new PagedListRenderOptions{
+    PageClasses = new string[] { "page-link" },
+    UlElementClasses = new string[] { "pagination" },
+    LiElementClasses = new string[] { "page-item" },
+    DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+    DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+    DisplayLinkToLastPage = PagedListDisplayMode.Always
+    }
+    )*@

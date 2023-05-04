@@ -1,0 +1,212 @@
+@using VDMJasminka.Core.Inventory.SupplierAggregate
+@using X.PagedList
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+
+@{
+    @model IEnumerable<Supplier>
+ViewData["Title"] = "Добавувачи";
+    var pagedList = (IPagedList)ViewBag.PageList;
+}
+
+
+<div class="row navbar navbar-light bg-light mb-3">
+    <h3>Добавувачи</h3>
+</div>
+<div id="modalPlaceholder"></div>
+<div class="row-12">
+    <div class="row">
+
+        <form asp-action="Suppliers" method="get" class="col-6">
+            <div class="form-actions mb-2">
+                <div class="col-6">
+
+
+                    <p>
+                        Пребарај по име: <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]"
+                            class="form-control" />
+                    </p>
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">Пребарај</button>|
+                    <a asp-action="Suppliers" asp-route-pageNumber=1>Прикажи цела листа</a>
+                </div>
+            </div>
+        </form>
+        <div class="col-12 ">
+            <button class="btn btn-primary mb-3 mr-5 float-right" data-toggle="modal" data-target="#supplierModal"
+                data-url="@Url.Action("CreateSupplier")"> Додади нов </button>
+        </div>
+    </div>
+</div>
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>
+                @Html.ActionLink("Име", "Suppliers", new { sortOrder = ViewBag.NameSortParm, pageNumber =
+                ViewBag.PageNum , searchString = ViewBag.Search })
+            </th>
+            <th>
+                Адреса
+            </th>
+            <th>
+                Телефонски број
+            </th>
+            <th>
+                Локација
+            </th>
+            <th>
+                Акции
+
+            </th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (Supplier b in ViewBag.PageList)
+        {
+            <tr id="row_@b.Id">
+                <td>
+                    @Html.DisplayFor(modelItem => b.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => b.Address.Address)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => b.Address.PhoneNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => b.Address.Location)
+                </td>
+                <td>
+
+                    <div class="btn-group btn-group-sm">
+                        <a class="btn btn-primary btn-sm"  onclick=featureNotImplementedYet();>
+                            Детали
+                        </a>
+
+                        <a class="btn btn-success btn-sm" asp-action="EditSupplier" asp-route-supplierId="@b.Id">
+                            Промени
+                        </a>
+                        @* <form asp-action="DeleteOwner" asp-route-ownerId="@b.Id" asp-method="post">
+                            <button type="submit" class="btn btn-danger btn-sm rounded-0 rounded-0">Избриши</button>
+                            </form> *@
+                        <button onclick="DeleteSupplier(@b.Id)"
+                        class="btn btn-danger btn-sm rounded-0 rounded-0">Избриши</button>
+
+                    </div>
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+
+</table>
+
+@Html.PagedListPager(
+pagedList,
+pageNumber => Url.Action("Suppliers", new { pageNumber , searchString = ViewBag.Search, sortOrder = ViewBag.CurrentSort
+}),
+new PagedListRenderOptions{
+PageClasses = new string[] { "page-link" },
+UlElementClasses = new string[] { "pagination" },
+LiElementClasses = new string[] { "page-item" },
+DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+DisplayLinkToLastPage = PagedListDisplayMode.Always
+}
+)
+
+
+<div class="modal fade" id="basic" tabindex="-1" role="basic" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Delete Confirmation</h4>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this item?
+            </div>
+            <div class="modal-footer">
+                <button data-dismiss="modal" type="button" class="btn btn-default">Cancel</button>
+                <button id="btnContinueDelete" type="button" class="btn btn-primary">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootbox/bootbox.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        var DeleteSupplier = function (supplierId) {
+
+            bootbox.confirm({
+                message: "Дали сте сигурни?",
+                buttons: {
+                    confirm: {
+                        label: 'Да',
+                        className: 'btn-success',
+                    },
+                    cancel: {
+                        label: "Не",
+                        className: "btn-danger",
+                    },
+
+                },
+                callback: (result) => {
+                    if (result) {
+                        deleteSupplier(supplierId);
+
+                    }
+                }
+            })
+        }
+        var deleteSupplier = function(supplierId) {
+            $.ajax({
+                type: "POST",
+                url: "/Management/DeleteSupplier",
+                data: { id: supplierId },
+                success: function (result) {
+                    $("#row_" + supplierId).remove();
+
+                }
+            })
+        }
+        $(function () {
+            var path_to_delete;
+
+            $(".deleteItem").click(function (e) {
+                path_to_delete = $(this).data('path');
+                console.log(path_to_delete)
+
+            });
+
+            $('#btnContinueDelete').click(function () {
+                window.location = path_to_delete;
+                console.log(path_to_delete);
+            });
+        })
+
+        $(function () {
+            var placeholderElement = $('#modalPlaceholder');
+
+            $('button[data-toggle="modal"]').click(function (event) {
+                let url = $(this).data('url');
+                $.get(url).done(function (data) {
+                    jQuery.noConflict();
+                    placeholderElement.html(data);
+                    placeholderElement.find('.modal').modal('show');
+                });
+            })
+
+        @* placeholderElement.on('click', '[data-save="modal"]', function() {
+            var from = $(this).parens('.modal').find('form');
+            var actionUrl = form.attr('action');
+            var sendData = form.serialize();
+            $
+            }) *@
+})
+    </script>

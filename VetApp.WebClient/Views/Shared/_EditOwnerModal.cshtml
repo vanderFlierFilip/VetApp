@@ -1,0 +1,94 @@
+﻿@using VDMJasminka.Application.Dtos.Ambulance
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+
+
+@{
+
+    @model EditOwnerModalViewModel
+
+}
+
+<form method="post" asp-action="ChangeOwnerInformation">
+    <input asp-for="Owner.Id" hidden />
+    <input asp-for="PetId" hidden />
+    <div class="modal-body mx-0">
+        <div class="form-group">
+            <label for="staticEmail" class=" font-weight-bold">Име и презиме:</label>
+            <div>
+                <input type="text" class="form-control" asp-for="Owner.FullName" readonly>
+                <span asp-validation-for="Owner.FullName" class="text-danger"></span>
+            </div>
+
+        </div>
+        <div class="form-group">
+            <label for="staticEmail" class="  font-weight-bold"
+                   asp-for="Owner.Address">
+                Адреса
+                на
+                живеење:
+            </label>
+            <div class="">
+                <input type="text" class="form-control" asp-for="Owner.Address">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="staticEmail" class="  font-weight-bold">Град:</label>
+            <div class="">
+                <input type="text" class="form-control" asp-for="Owner.Location">
+            </div>
+        </div>
+        <div class="form-group">
+
+            <label for="staticEmail" class="  font-weight-bold">Општина:</label>
+            <div class="">
+                <input type="text" class="form-control" asp-for="Owner.Municipality">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="staticEmail" class="  font-weight-bold">
+                Телефонски
+                број:
+            </label>
+            <div class="">
+                <input type="text" class="form-control" asp-for="Owner.PhoneNumber">
+            </div>
+        </div>
+        <div class="form-group">
+
+            <label for="staticEmail" class="  font-weight-bold">ЕМБГ:</label>
+            <div class="">
+                <input type="text" class="form-control" asp-for="Owner.SSN" asp-is-readonly="!string.IsNullOrEmpty(@Model.Owner.SSN)">
+                <span asp-validation-for="Owner.SSN" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="staticEmail" class="  font-weight-bold">Е-маил:</label>
+            <div class="">
+                <input type="text" class="form-control" asp-for="Owner.Email">
+                <span asp-validation-for="Owner.Email" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="staticEmail" class="  font-weight-bold">Останати информации</label>
+            <div class="">
+                <input type="textarea" class="form-control" asp-for="Owner.AdditionalInfo">
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Затвори</button>
+        <input type="submit" class="btn btn-success" value="Зачувај" />
+    </div>
+</form>
+
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>

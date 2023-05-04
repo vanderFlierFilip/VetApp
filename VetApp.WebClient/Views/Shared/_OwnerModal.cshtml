@@ -1,0 +1,201 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@using VDMJasminka.Shared.Dto;
+@using HtmlHelpers.BeginCollectionItemCore;
+@model CreateOwnerMultiFormViewModel;
+<link rel="stylesheet" href="~/css/spinner.css" />
+<style>
+    .pet-card-title {
+        font-weight: 700;
+        font-size: 1.2rem;
+        cursor: pointer;
+        font-family: Montserrat, -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    #saveBtn {
+        margin: 0 -35px;
+    }
+</style>
+<div class="bs-stepper">
+    <div class="bs-stepper-header" role="tablist">
+        <!-- your steps here -->
+        <div class="step" data-target="#logins-part">
+            <button type="button" class="step-trigger" role="tab" id="logins-part-trigger">
+                <span class="bs-stepper-circle">1</span>
+                <span class="bs-stepper-label">Сопственик</span>
+            </button>
+        </div>
+        <div class="line"></div>
+        <div class="step" data-target="#create-pet-part">
+            <button type="button" class="step-trigger" role="tab" id="create-pet-part-trigger">
+                <span class="bs-stepper-circle">2</span>
+                <span class="bs-stepper-label">Миленици</span>
+            </button>
+        </div>
+
+    </div>
+
+    <div class="bs-stepper-content">
+        <form id="cnt" asp-action="CreateOwner">
+            <!-- your steps content here -->
+            <div id="logins-part" class="content col" role="tabpanel">
+                <label for="staticEmail" class="col-4 col-form-label font-weight-bold">Име и презиме:</label>
+                <div class="col-9">
+                    <input type="text" class="form-control" asp-for="@Model.OwnerModel.FullName">
+                </div>
+                <label for="staticEmail" class="col-sm-4 col-form-label font-weight-bold">Адреса на живеење:</label>
+                <div class="col-9">
+                    <input type="text" class="form-control" asp-for="@Model.OwnerModel.Address">
+                </div>
+                <label for="staticEmail" class="col-sm-4 col-form-label font-weight-bold">Град:</label>
+                <div class="col-9">
+                    <input type="text" class="form-control" asp-for="@Model.OwnerModel.Location">
+                </div>
+                <label for="staticEmail" class="col-sm-4 col-form-label font-weight-bold">Општина:</label>
+                <div class="col-9">
+                    <input type="text" class="form-control" asp-for="@Model.OwnerModel.Municipality">
+                </div>
+                <label for="staticEmail" class="col-sm-4 col-form-label font-weight-bold">Телефонски број:</label>
+                <div class="col-9">
+                    <input type="text" class="form-control" asp-for="@Model.OwnerModel.PhoneNumber">
+                </div>
+                <label for="staticEmail" class="col-sm-4 col-form-label font-weight-bold">ЕМБГ:</label>
+                <div class="col-9">
+                    <input type="text" class="form-control" asp-for="@Model.OwnerModel.SSN">
+                </div>
+                <div class="col-9 mt-5">
+                    <button id="first" class="btn btn-primary" type="button">
+                        Следно
+                    </button>
+                </div>
+
+            </div>
+            <div id="create-pet-part" class="content" role="tabpanel">
+                <div class="d-flex justify-content-center" style="height: 100%">
+                    <div class="lds-roller" id="spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                </div>
+                <div id="addMoreDiv"></div>
+                <div class="d-flex justify-content-between mt-2 mb-4">
+                    <button id="back" class="btn btn-danger" type="button">
+                        Назад
+                    </button>
+                    <button id="add-next" class="btn btn-primary " type="button">Нов миленик</button>
+                </div>
+                <button type="submit" class="btn btn-success">Зачувај</button>
+            </div>
+        </form>
+
+    </div>
+
+</div>
+<script src="~/lib/bs-stepper/dist/js/bs-stepper.min.js"></script>
+<script src="~/lib/bootstrap-datepicker/bootstrap-datepicker.js"></script>
+<script src="~/lib/bootstrap-datepicker/bootstrap-datepicker.mk.js"></script>
+<script>
+    function getAllElementsAsArray(selector) {
+        return Array.prototype.slice.call(document.querySelectorAll(selector));
+    }
+    function getValuesFromElemets(selector) {
+        return getAllElementsAsArray(selector).map(el => el.value)
+    }
+
+
+
+
+    var stepper = new Stepper(document.querySelector('.bs-stepper'));
+
+    document.getElementById("first").addEventListener('click', e => {
+        stepper.next();
+    })
+    document.getElementById("back").addEventListener('click', e => {
+        stepper.to(1);
+    })
+    document.getElementById("create-pet-part-trigger").addEventListener('click', e => {
+        stepper.to(2);
+    })
+
+    function setCardTogglesAndTitles(element, index, length) {
+        const petNumber = index + 1;
+        const childrenArray = Array.from($(element).children());
+        const cardTitle = childrenArray[0];
+        const cardBody = childrenArray[1];
+
+        cardTitle.innerText = 'Миленик ' + petNumber;
+        $(cardTitle).addClass('pet-card-title');
+        $(cardBody).attr('id', 'cardBody' + '_' + index);
+        $(cardTitle).attr("data-toggle", "collapse");
+        $(cardTitle).attr("data-target", "#cardBody_" + index);
+
+        if (index === length - 1) {
+            $(cardBody).addClass('show');
+        } else {
+            $(cardBody).removeClass('show');
+        }
+
+    }
+    function getPetFormPartial() {
+        $.ajax({
+            url: '@Url.Action("GetCreatePetPartial", "OwnersAndPetsManagement")',
+            type: 'GET',
+            success: function (result) {
+                if ($(".lds-roller")) {
+                    $(".lds-roller").remove()
+                }
+
+                $("#addMoreDiv").append(result);
+                const cards = Array.from($("*[id*=petModelForm]"))
+                cards.forEach((el, i) => {
+                    setCardTogglesAndTitles(el, i, cards.length)
+                })
+
+                getAllElementsAsArray("#datepicker").forEach(el => {
+                    $(el).datepicker({
+                        language: "mk",
+                        autoclose: true,
+                        format: 'mm/dd/yyyy',
+                        startDate: '+3d',
+                    });
+                })
+
+                document.querySelectorAll("#species").forEach(el => {
+                    el.addEventListener('change', (e => {
+                        const breedInputs = getAllElementsAsArray("#breed");
+                        const speciesInputs = getAllElementsAsArray("#species");
+                        const speciesIdx = speciesInputs.indexOf(e.target);
+                        const currBreedInput = breedInputs[speciesIdx];
+                        getTypeBreedsByTypeId(e.target.value, currBreedInput);
+                    }))
+                })
+
+                var getTypeBreedsByTypeId = function (id, inputToChange) {
+                    $.ajax({
+                        url: '@Url.Action("GetBreeds")',
+                        type: 'GET',
+                        data: {
+                            specieId: id,
+                        },
+                        success: function (data) {
+                            $(inputToChange).find('option').remove()
+                            $(data).each(
+                                function (index, item) {
+                                    $(inputToChange).append('<option value="' + item.id + '">' + item.name + '</option>')
+                                });
+                        },
+                        error: function () {
+                        }
+                    });
+                }
+            },
+            error: function () {
+            }
+        })
+    }
+    // get partial for the first time
+    getPetFormPartial();
+
+    // get on click
+    $("#add-next").click(getPetFormPartial)
+
+    </script>

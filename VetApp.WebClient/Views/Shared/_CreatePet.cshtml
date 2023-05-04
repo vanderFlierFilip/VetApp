@@ -1,0 +1,97 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    @model PetMultiFormModel
+
+}
+
+@using HtmlHelpers.BeginCollectionItemCore
+@using (Html.BeginCollectionItem("PetModels"))
+{
+    <div class="card mt-1 mb-2" id="petModelForm">
+        <div class="card-header" id="petTitle"></div>
+        <div class="card-body collapse">
+            <div class="form-row mb-5">
+                <div class="col">
+                    <label class="col col-form-label font-weight-bold">Име:</label>
+                    <div class="col">
+                        <input type="text" class="form-control" asp-for="Pet.Name">
+                        <span asp-validation-for="Pet.Name" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col">
+                    <label class="col col-form-label font-weight-bold">Број на чип:</label>
+                    <div class="col">
+                        <input type="text" class="form-control" asp-for="Pet.ChipNumber">
+                    </div>
+                </div>
+                <div class="col">
+                    <label class="col col-form-label font-weight-bold">Датум на раѓање:</label>
+                    <div class="col ">
+                        <input type="text" class="form-control" id="datepicker" asp-for="Pet.DateOfBirth">
+                        <span asp-validation-for="Pet.DateOfBirth" class="text-danger"></span>
+                    </div>
+                </div>
+
+            </div>
+            <hr>
+            <div class="form-row mb-5">
+                <div class="col">
+                    <label class="col col-form-label font-weight-bold">Врста:</label>
+                    <div class="col">
+                        <select id="species" asp-items="@Model.SpeciesList" asp-for="Pet.SpeciesId" class="form-control">
+                            <span asp-validation-for="Pet.SpeciesId" class="text-danger"></span>
+                            <option></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col">
+                    <label class="col col-form-label font-weight-bold">Раса:</label>
+                    <div class="col">
+                        <select id="breed" asp-for="Pet.BreedId" class="form-control">
+                            <option></option>
+                        </select>
+                        <span asp-validation-for="Pet.BreedId" class="text-danger"></span>
+
+                    </div>
+                </div>
+
+                <div class="col">
+                    <label class="col col-form-label font-weight-bold">Пол:</label>
+                    <div class="col">
+                        <select asp-items="@Model.AnimalSexOptions" asp-for="Pet.Sex" class="form-control"></select>
+                        <span asp-validation-for="Pet.Sex" class="text-danger"></span>
+
+                    </div>
+                </div>
+                <div class="col">
+                    <label class="col col-form-label font-weight-bold">Алергија:</label>
+                    <div class="col">
+                        <input type="text" class="form-control" asp-for="Pet.Alergy">
+                    </div>
+                </div>
+                <hr>
+
+            </div>
+            <div class="form-row mb-5">
+                <div class="col">
+                    <label class="col col-form-label font-weight-bold">Опис:</label>
+                    <div class="col">
+                        <textarea type="text" class="form-control" asp-for="Pet.Description"></textarea>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+}
+
+<script>
+
+   
+
+</script>

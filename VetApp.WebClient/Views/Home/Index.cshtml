@@ -1,0 +1,200 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@model HomeViewModel
+<style>
+    .autocomplete {
+        position: relative;
+        display: inline-block;
+    }
+
+    .autocomplete-items {
+        position: absolute;
+        z-index: 99;
+        top: 100%;
+        left: 0;
+        right: 0;
+    }
+
+        .autocomplete-items div {
+            padding: 10px;
+            cursor: pointer;
+            background-color: #fff;
+            border-bottom: 1px solid #d4d4d4;
+        }
+
+            .autocomplete-items div:hover {
+                color: #ffffff;
+                background-color: DodgerBlue !important;
+            }
+
+    .autocomplete-active {
+        /*when navigating through the items using the arrow keys:*/
+        background-color: DodgerBlue !important;
+        color: #ffffff;
+    }
+</style>
+<link rel="stylesheet" href="~/lib/bs-stepper/dist/css/bs-stepper.min.css">
+
+
+<div class="row navbar navbar-light bg-light mb-3">
+    <h3>Дома</h3>
+</div>
+<div class="row">
+    <div class="col">
+        <div id="calendar"></div>
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col-4">
+        <div class="card">
+            <div class="card-header">Вакцинации</div>
+            <div class="card-body">
+                <div class="list-group">
+                    <div class="list-group-item">
+                        <div class="row">
+                            <div class="col-9">
+                                <p class="card-text">
+                                    Џони, protiv besnilo
+                                </p>
+                            </div>
+                            <div class="col-3">
+                                <p class="card-text">
+                                    <span class="badge badge-pill badge-danger w-100 h-100">Denes</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                Sopstvenik: Taa i taa Тел број: 070888444
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="list-group-item">
+                        <div class="row">
+
+                            <div class="col-9">
+                                <p class="card-text">
+                                    Џони, protiv besnilo
+                                </p>
+                            </div>
+                            <div class="col-3">
+                                <p class="card-text">
+                                    <span class="badge badge-pill badge-danger w-100 h-100">Denes</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                Sopstvenik: Taa i taa Тел број: 070888444
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="col-4">
+        <div class="card">
+            <div class="card-header">Контролни прегледи</div>
+            <div class="card-body">
+                <p class="card-text">
+
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-4">
+        <div class="card">
+            <div class="card-header">Инвентар</div>
+            <div class="card-body">
+                <p class="card-text">
+
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<link href='~/lib/fullcalendar/lib/main.css' rel='stylesheet' />
+<script src="~/lib/bs-stepper/dist/js/bs-stepper.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var stepper = new Stepper(document.querySelector('.bs-stepper'));
+
+        document.getElementById("first").addEventListener(e => {
+            stepper.next();
+        })
+    })
+</script>
+
+<script src='~/lib/fullcalendar/lib/main.js'></script>
+<script src="~/lib/fullcalendar/lib/locales/mk.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+
+            themeSystem: 'bootstrap',
+            initialView: 'timeGridWeek',
+            locale: 'mk',
+            eventClick: showModal,
+            editable: true,
+            droppable: true,
+            eventColor: '#ff7851',
+            eventDragStop: function (data) {
+                console.log(data);
+            },
+            events: {
+                url: '/Home/GetSchedule',
+                success: function () {
+                },
+                failure: function () {
+                    alert("error");
+                }
+            },
+            height: 560,
+            businessHours: true,
+            businessHours: {
+                // days of week. an array of zero-based day of week integers (0=Sunday)
+                daysOfWeek: [1, 2, 3, 4, 5, 6], // Monday - Thursday
+
+                startTime: '09:00', // a start time (10am in this example)
+                endTime: '16:00', // an end time (6pm in this example)
+            },
+            slotMinTime: '09:00',
+            slotMaxTime: '19:00',
+            customButtons: {
+                newAppointmentButton: {
+                    text: 'new',
+                    click: showModal
+                }
+            },
+            headerToolbar: {
+                left: 'title',
+                center: 'newAppointmentButton',
+                right: 'today dayGridMonth,timeGridWeek,timeGridDay',
+
+            }
+
+        });
+        calendar.render();
+    });
+
+    function showModal() {
+        var url = '@Url.Action("GetAppointmentPartial", "Home")';
+        $.get(url, (data) => {
+            bootbox.dialog({
+                message: data
+            })
+        })
+    }
+
+
+</script>

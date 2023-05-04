@@ -1,0 +1,45 @@
+@{
+
+}
+@{
+    @model SupplierModel
+
+}
+<form asp-action="CreateSupplier" method="post">
+
+    <div id="exampleModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Нов добавувач</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label >Име:</label>
+                        <input class="form-control" type="text" asp-for="Name" c>
+                    </div>
+                    <div class="form-group">
+                        <label>Адреса:</label>
+                        <input type="text" asp-for="Address" class="form-control">
+                    </div>
+                       <div class="form-group">
+                        <label>Град:</label>
+                        <input type="text" asp-for="Location" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Телефонски број:</label>
+                        <input type="text" asp-for="PhoneNumber" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Затвори</button>
+                    <input type="submit" class="btn btn-success" value="Зачувај" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>

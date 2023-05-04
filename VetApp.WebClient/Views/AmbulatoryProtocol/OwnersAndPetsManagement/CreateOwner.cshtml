@@ -1,0 +1,46 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@{
+    @model OwnerModel
+}
+ <div class="row navbar navbar-light bg-light mb-3">
+    <h3>Нов Сопственик</h3>
+</div>  
+    <div class="container">
+    <div class="form-group row-12">
+        <form method="post" asp-action="CreateOwner">
+            <label for="staticEmail" class="col-4 col-form-label font-weight-bold">Име и презиме:</label>
+            <div class="col-6">
+               <input type="text"  class="form-control"  asp-for="FullName">
+            </div>
+                <label for="staticEmail" class="col-sm-4 col-form-label font-weight-bold" asp-for="Address">Адреса на живеење:</label>
+            <div class="col-sm-6">
+              <input type="text"  class="form-control"  asp-for="Address">
+            </div>
+                <label for="staticEmail" class="col-sm-4 col-form-label font-weight-bold">Град:</label>
+            <div class="col-sm-6">
+              <input type="text"  class="form-control" asp-for="Location">
+            </div>
+              <label for="staticEmail" class="col-sm-4 col-form-label font-weight-bold">Општина:</label>
+            <div class="col-sm-6">
+              <input type="text"  class="form-control"  asp-for="Municipality">
+            </div>
+            <label for="staticEmail" class="col-sm-4 col-form-label font-weight-bold">Телефонски број:</label>
+            <div class="col-sm-6">
+              <input type="text"  class="form-control"  asp-for="PhoneNumber">
+            </div>
+               <label for="staticEmail" class="col-sm-4 col-form-label font-weight-bold">ЕМБГ:</label>
+            <div class="col-sm-6">
+              <input type="text"  class="form-control"  asp-for="SSN">
+            </div>
+            <div>
+                <input type="submit" class="btn btn-success" value="Зачувај" />
+              <a class="btn btn-danger" asp-action="Owners" asp-route-pageNumber="1" >Назад</a>
+            </div>
+              
+        </form>
+        
+      </div>
+    </div>

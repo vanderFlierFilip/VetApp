@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+	  <GenerateRuntimeConfigurationFiles>True</GenerateRuntimeConfigurationFiles>
+	  <UseRazorSourceGenerator>False</UseRazorSourceGenerator>
+  </PropertyGroup>
+
+  <ItemGroup>
+	
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
+	
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.24" />
+	
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.23" />
+	
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.23">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+	
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.23">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.5" />
+    <PackageReference Include="RazorLight" Version="2.1.0" />
+    <PackageReference Include="Scrutor" Version="3.3.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0" />
+    <PackageReference Include="X.PagedList.Mvc.Core" Version="8.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VDMJasminka.Application\VDMJasminka.Application.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Views\Shared\Managment\" />
+  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Haukcode.WkHtmlToPdfDotNet" Version="1.5.82" />
+	</ItemGroup>
+	<ItemGroup>
+		<!-- extends watching group to include *.cshtml and *.razor files -->
+		<Watch Include="**\_*.cshtml;**\*.cshtml;*.razor;*.js;*.css" Exclude="**\obj\**\*;bin\**\*" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Content Remove="Views\Shared\_CreatePet.cshtml" />
+	  <Content Remove="Views\Shared\_TestPartialView.cshtml" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Watch Remove="Views\Shared\_CreatePet.cshtml" />
+	  <Watch Remove="Views\Shared\_TestPartialView.cshtml" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Include="Views\Shared\_CreatePet.cshtml" />
+	  <None Include="Views\Shared\_TestPartialView.cshtml" />
+	</ItemGroup>
+</Project>

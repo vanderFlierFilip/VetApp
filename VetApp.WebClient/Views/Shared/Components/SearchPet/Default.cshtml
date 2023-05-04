@@ -1,0 +1,181 @@
+﻿@using VDMJasminka.Application.Dtos.Ambulance
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    @model IEnumerable<PetSearchViewModel>
+
+}
+<style>
+    .form-group {
+        margin-bottom: 0;
+    }
+    .has-search .form-control {
+        padding-left: 2.375rem;
+    }
+    .has-search .form-control-feedback {
+        position: absolute;
+        z-index: 2;
+        display: block;
+        width: 2.375rem;
+        height: 2.375rem;
+        line-height: 2.375rem;
+        text-align: center;
+        pointer-events: none;
+        color: #aaa;
+    }
+</style>
+<div class="form-group has-search">
+    <span class="fa fa-search form-control-feedback"></span>
+    <input type="search" class="form-control" id="searchPet" placeholder="Пребарај миленик..." style="height: auto" />
+</div>
+
+    <script>
+        var pets = [];
+
+        @foreach (var pet in @Model)
+        {
+            @:pets.push({ petName: "@pet.PetName", id: @pet.PetId, ownerName: "@pet.OwnerName", ownerId: "@pet.OwnerId" });
+
+        }
+
+
+            function autocomplete(inp, arr) {
+                /*the autocomplete function takes two arguments,
+                the text field element and an array of possible autocompleted values:*/
+                var currentFocus;
+                /*execute a function when someone writes in the text field:*/
+                inp.addEventListener("input", function (e) {
+                    var a, b, i, val = this.value;
+                    /*close any already open lists of autocompleted values*/
+                    closeAllLists();
+                    if (!val) { return false; }
+                    currentFocus = -1;
+                    /*create a DIV element that will contain the items (values):*/
+                    a = document.createElement("DIV");
+                    a.setAttribute("id", this.id + "list-group");
+                    a.setAttribute("class", "list-group");
+                    a.style.zIndex = 99;
+                    a.style.position = "absolute"
+                    a.style.left = '3%';
+                    a.style.right = '3%';
+
+                    console.log(e.target)
+                    /*append the DIV element as a child of the autocomplete container:*/
+                    this.parentNode.appendChild(a);
+
+                    /*for each item in the array...*/
+                    for (i = 0; i < arr.length; i++) {
+                        /*check if the item starts with the same letters as the text field value:*/
+                        var name = arr[i].petName + " " + arr[i].ownerName;
+                        if (name.substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+                            /*create a DIV element for each matching element:*/
+                            b = document.createElement("DIV");
+                            b.setAttribute("class", "list-group-item")
+                            /*make the matching letters bold:*/
+                            b.innerHTML = "<strong>" + name.substr(0, val.length) + "</strong>";
+                            b.innerHTML += name.substr(val.length);
+                            b.style.cursor = 'pointer';
+                            /*insert a input field that will hold the current array item's value:*/
+                            let selectedObject = arr[i]
+                            b.innerHTML += "<input type='hidden' value='" + arr[i].petName + "'>";
+                            /*execute a function when someone clicks on the item value (DIV element):*/
+                            b.addEventListener("click", function (e) {
+                                /*insert the value for the autocomplete text field:*/
+                                inp.value = this.getElementsByTagName("input")[0].value;
+                                petSelected(selectedObject)
+                                /*close the list of autocompleted values,
+                                (or any other open lists of autocompleted values:*/
+                                closeAllLists();
+                            });
+                            b.addEventListener("mouseover", (e) => {
+                                e.target.classList.add('active');
+                            });
+                            b.addEventListener("mouseleave", (e) => {
+                                e.target.classList.remove('active');
+                            });
+                            a.appendChild(b);
+                        }
+                    }
+                });
+
+                /*execute a function presses a key on the keyboard:*/
+                inp.addEventListener("keydown", function (e) {
+                    var x = document.getElementById(this.id + "list-group");
+                    if (x) x = x.getElementsByTagName("div");
+                    if (e.keyCode == 40) {
+                        /*If the arrow DOWN key is pressed,
+                        increase the currentFocus variable:*/
+                        currentFocus++;
+                        /*and and make the current item more visible:*/
+                        addActive(x);
+                    } else if (e.keyCode == 38) { //up
+                        /*If the arrow UP key is pressed,
+                        decrease the currentFocus variable:*/
+                        currentFocus--;
+                        /*and and make the current item more visible:*/
+                        addActive(x);
+                    } else if (e.keyCode == 13) {
+                        /*If the ENTER key is pressed, prevent the form from being submitted,*/
+                        e.preventDefault();
+                        if (currentFocus > -1) {
+                            /*and simulate a click on the "active" item:*/
+                            if (x) x[currentFocus].click();
+                        }
+                    }
+                });
+
+                function addActive(x) {
+                    /*a function to classify an item as "active":*/
+                    if (!x) return false;
+                    /*start by removing the "active" class on all items:*/
+                    removeActive(x);
+                    if (currentFocus >= x.length) currentFocus = 0;
+                    if (currentFocus < 0) currentFocus = (x.length - 1);
+                    /*add class "autocomplete-active":*/
+                    x[currentFocus].classList.add("active");
+                }
+                function removeActive(x) {
+                    /*a function to remove the "active" class from all autocomplete items:*/
+                    for (var i = 0; i < x.length; i++) {
+                        x[i].classList.remove("active");
+                    }
+                }
+                function closeAllLists(elmnt) {
+                    /*close all autocomplete lists in the document,
+                    except the one passed as an argument:*/
+                    var x = document.getElementsByClassName("list-group");
+                    for (var i = 0; i < x.length; i++) {
+                        if (elmnt != x[i] && elmnt != inp) {
+                            x[i].parentNode.removeChild(x[i]);
+                        }
+                    }
+                }
+                /*execute a function when someone clicks in the document:*/
+                document.addEventListener("click", function (e) {
+                    closeAllLists(e.target);
+                });
+            }
+        let input = document.getElementById("searchPet");
+        autocomplete(input, pets)
+
+        function petSelected(pet) {
+
+            $.ajax({
+                method: 'POST',
+                url: '@Url.Action("FuckOffToPetDetials", "PetDetailsPage")',
+                data: {
+                    ownerId: pet.ownerId,
+                    petId: pet.id
+                },
+                success: function (data) {
+                    window.location.href = data;
+                }
+
+            })
+
+        }
+
+
+    </script>
+

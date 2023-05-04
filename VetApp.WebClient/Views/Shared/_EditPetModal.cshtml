@@ -1,0 +1,108 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    @model EditPetModalViewModel
+
+}
+<form method="post" asp-action="ChangePetInformation">
+    <input asp-for="OwnerId" hidden />
+    <input asp-for="Pet.Id" hidden />
+    <label class="col col-form-label font-weight-bold">Име:</label>
+    <div class="col">
+        <input type="text" class="form-control" asp-for="Pet.Name" asp-is-readonly="!string.IsNullOrEmpty(@Model.Pet.ChipNumber)">
+        <span asp-validation-for="Pet.Name" class="text-danger"></span>
+    </div>
+    <label class="col col-form-label font-weight-bold">Број на чип:</label>
+    <div class="col">
+        <input type="text" class="form-control" asp-for="Pet.ChipNumber" readonly>
+    </div>
+    <label class="col col-form-label font-weight-bold">Датум на раѓање:</label>
+    <div class="col ">
+        @Html.EditorFor(m => m.Pet.DateOfBirth, new {htmlAttributes = new { @class="datepicker form-control",
+        @id="datepicker", @readonly=Model.Pet.DateOfBirth != null}})
+        <span asp-validation-for="Pet.DateOfBirth" class="text-danger"></span>
+
+    </div>
+
+    <div class="form-row">
+        <div class="col">
+            <label class="col col-form-label font-weight-bold">Врста:</label>
+            <div class="col">
+                <select id="species" asp-items="@Model.SpeciesList" asp-for="Pet.Species.Id" class="form-control" asp-is-disabled="!string.IsNullOrEmpty(@Model.Pet.Species.Name)">
+                    <span asp-validation-for="Pet.Species.Id" class="text-danger"></span>
+                    <option></option>
+                </select>
+            </div>
+        </div>
+        <div class="col">
+            <label class="col col-form-label font-weight-bold">Раса:</label>
+            <div class="col">
+                <select id="breed" asp-for="Pet.AnimalBreed.Id" asp-items="@Model.Breeds" class="form-control" asp-is-disabled="!string.IsNullOrEmpty(@Model.Pet.AnimalBreed.Name)"></select>
+                <span asp-validation-for="Pet.AnimalBreed.Id" class="text-danger"></span>
+
+            </div>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="col">
+            <label class="col col-form-label font-weight-bold">Пол:</label>
+            <div class="col">
+                <select asp-items="@Model.AnimalSexOptions" asp-for="Pet.Sex" class="form-control" asp-is-disabled="!string.IsNullOrEmpty(@Model.Pet.Sex)"></select>
+                <span asp-validation-for="Pet.Sex" class="text-danger"></span>
+
+            </div>
+        </div>
+        <div class="col">
+            <label class="col col-form-label font-weight-bold">Алергија:</label>
+            <div class="col">
+                <input type="text" class="form-control" asp-for="Pet.Alergy">
+            </div>
+        </div>
+
+    </div>
+    <label class="col col-form-label font-weight-bold">Опис:</label>
+    <div class="col">
+        <textarea type="text" class="form-control" asp-for="Pet.Description"></textarea>
+    </div>
+    </div>
+
+    <div class="modal-footer mx-0 mt-2">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Затвори</button>
+        <input type="submit" class="btn btn-success" value="Зачувај" />
+    </div>
+    </div>
+</form>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#species").change(function () {
+            getTypeBreedsByTypeId();
+        });
+        $(document).ready(function () {
+            $(".datepicker").datepicker("show");
+        });
+        var getTypeBreedsByTypeId = function () {
+            $.ajax({
+                url: '@Url.Action("GetSpeciesBreedsAsSelectList")',
+                type: 'GET',
+                data: {
+                    speciesId: $('#species').val(),
+                },
+                success: function (data) {
+                    $('#breed').find('option').remove()
+                    $(data).each(
+                        function (index, item) {
+                            $('#breed').append('<option value="' + item.id + '">' + item.name + '</option>')
+                        });
+                },
+                error: function () {
+                }
+            });
+        }
+    })
+</script>
+
+

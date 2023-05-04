@@ -1,0 +1,113 @@
+﻿@using VDMJasminka.Application.Ambulance.Queries
+
+@{
+    @model CheckupReportViewModel
+}
+
+
+<div class="row navbar navbar-light bg-light mb-3">
+    <h3>Извештај</h3>
+</div>
+<div class="container pt-5">
+    <h4>@Model.Checkup.CheckupType на @Model.Pet.Name</h4>
+    <div class="row">
+        <div class="col-9">
+            @if (!string.IsNullOrEmpty(Model.Checkup.Anamnesis))
+            {
+                <div class="row py-1">
+                    <div class="col-3 font-weight-bold">
+                        Анамнеза:
+                    </div>
+                    <div class="col-9">@Model.Checkup.Anamnesis</div>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.Checkup.ClinicalPicture))
+            {
+                <div class="row py-1">
+                    <div class="col-3 font-weight-bold">Клиничка слика:</div>
+                    <div class="col-9">@Model.Checkup.ClinicalPicture</div>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.Checkup.Diagnosis))
+            {
+                <div class="row py-1">
+                    <div class="col-3 font-weight-bold">Дијагноза:</div>
+                    <div class="col-9">@Model.Checkup.Diagnosis</div>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.Checkup.Advice))
+            {
+                <div class="row py-1">
+                    <div class="col-3 font-weight-bold">Препорака:</div>
+                    <div class="col-9">@Model.Checkup.Advice</div>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.Checkup.Therapy))
+            {
+                <div class="row py-1">
+                    <div class="col-3 font-weight-bold">Препорачана терапија:</div>
+                    <div class="col-9">@Model.Checkup.Therapy</div>
+                </div>
+            }
+            @if (Model.Checkup.CheckupDetails.Any())
+            {
+                <div class="row py-1">
+                    <div class="col-3 font-weight-bold">Терапија:</div>
+                    <div class="col-9">
+                    @foreach (var item in @Model.Checkup.CheckupDetails)
+                    {
+                            <div class="row pl-3">
+                                @item.Amount @item.Uom, @item.MedicamentName, @item.MedicamentApplication
+                     
+                            </div>
+                    }
+                    </div>
+
+                </div>
+            }
+            <hr />
+            <div class="row py-1">
+                <div class="col-3 font-weight-bold">Наплатено:</div>
+                @if (Model.Checkup.PaidSum != null)
+                {
+                    <div class="col-3">@Model.Checkup.PaidSum ден</div>
+                }
+                else
+                {
+                    <div class="col-3">0 ден</div>
+                }
+            </div>
+        </div>
+        <div class="col">
+            <div class="row">
+                <form asp-controller="Reports" asp-action="DownloadSurgeryReport">
+                    <input hidden value="@Model.Owner.Id" name="ownerId" />
+                    <input hidden value="@Model.Pet.Id" name="petId"/>
+                    <input hidden value="@Model.Checkup.Id" name="checkupId"/>
+                    <button type="submit" class="btn btn-primary">Преземи PDF</button>
+                </form>
+            </div>
+            <div class="row">
+                <button class="btn btn-secondary" onclick="navigateToRecord(@Model.Owner.Id, @Model.Pet.Id)">Продолжи</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+ <script>
+    function navigateToRecord(ownerId, petId) {
+
+        $.ajax({
+            method: 'POST',
+            url: '@Url.Action("FuckOffToPetDetials", "PetDetailsPage")',
+            data: {
+                ownerId: ownerId,
+                petId: petId
+            },
+            success: function (data) {
+                window.location.href = data;
+            }
+
+        })
+    }
+ </script>

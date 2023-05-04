@@ -1,0 +1,598 @@
+﻿@using VDMJasminka.Shared.ViewModels
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    @model PetDetailsViewModel
+    ViewData["Title"] = $"Здраствен картон на {@Model.Pet.Name}";
+
+}
+<style>
+    /*Override some styles because of issues with bootbox*/
+    .bootbox .modal-header h4 {
+        float: none;
+    }
+
+    .bootbox .modal-header .close {
+        position: absolute;
+        right: 15px;
+    }
+
+    /*Override bootstrap nav styles to fit wanted look*/
+    .nav-tabs > li > button > button.active {
+    }
+
+    .label {
+        font-size: 19px;
+        font-weight: bold;
+    }
+
+    nav > .pet-tab > a {
+        color: white !important;
+    }
+
+        nav > .pet-tab > a.active {
+            color: grey !important;
+        }
+    /*style of custom icons for certain actions */
+    .vaccine_icon {
+        fill: currentColor;
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+    }
+
+    .custom-icon-btn :hover {
+        color: white !important;
+    }
+
+</style>
+<div id="modalPlaceholder"></div>
+
+<partial name="_SubHeader" view-data="ViewData"></partial>
+<div class="container-fluid mt-5">
+    <div class="card px-3 py-4 shadow bg-white rounded ">
+
+        <div class="row">
+            <div class="col">
+                <h5>
+                    Миленик
+                    <span>
+
+                        <button class="btn btn-outline-info btn-sm rounded-circle" data-toggle="tooltip" data-placement="top" title="Измени податоци" onclick="showEditPetModal(@Model.Owner.Id, @Model.Pet.Id)">
+                            <i class="fa fa-pencil fa-sm" aria-hidden="true"></i>
+                        </button>
+                    </span>
+                    <span class="ml-2">
+                        <a asp-action="Checkup" asp-controller="Checkup" asp-route-ownerId="@Model.Owner.Id" asp-route-petId="@Model.Pet.Id" style="text-decoration: none">
+                            <button type="button" class="btn btn-outline-primary btn-sm">
+                                <span><i class="fa fa-stethoscope" aria-hidden="true"></i></span>
+
+                                Прегледај
+                            </button>
+                        </a>
+
+
+                    </span>
+                    <span class="ml-2">
+                        <a asp-action="Surgery" asp-controller="Surgery" asp-route-ownerId="@Model.Owner.Id" asp-route-petId="@Model.Pet.Id" style="text-decoration: none">
+                            <button type="button" class="btn btn-outline-primarybtn-sm">
+                                <span><i class="fa fa-heartbeat" aria-hidden="true"></i></span>
+                                Оперирај
+                            </button>
+                        </a>
+
+                    </span>
+                    <span class="ml-2">
+                        <a asp-action="Vaccination" asp-controller="Vaccination" asp-route-ownerId="@Model.Owner.Id" asp-route-petId="@Model.Pet.Id" style="text-decoration: none">
+                            <button type="button" class="btn btn-outline-primary btn-sm custom-icon-btn">
+                                <span class="vaccine_icon">
+                                    <?xml version="1.0" encoding="utf-8" ?>
+                                    <!-- Svg Vector Icons : http://www.onlinewebfonts.com/icon -->
+                                    <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+                                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 1000 1000" enable-background="new 0 0 1000 1000" xml:space="preserve">
+                                    <metadata> Svg Vector Icons : http://www.onlinewebfonts.com/icon </metadata>
+                                    <g><g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"><path d="M7516.1,4955.2c-45.9-45.9-65.1-82.3-65.1-126.3c0-86.1,24.9-126.3,178-283.3l137.8-137.8l-444.1-446c-243.1-243.1-451.7-463.2-463.2-486.2c-40.2-80.4-24.9-158.9,44-227.8c74.6-74.6,162.7-86.1,241.2-34.5c26.8,17.2,243.1,225.9,484.3,465.1l434.5,432.6l463.2-465.1l465.1-463.2l-442.2-444.1c-245-245-453.6-465.1-465.1-488.1c-40.2-80.4-24.9-158.9,44-227.8c74.7-74.6,162.7-86.1,241.2-34.5c26.8,17.2,243.1,225.9,482.4,465.1l436.4,432.6l137.8-137.8c76.6-74.7,158.8-145.5,181.8-157c153.1-78.5,333,82.3,283.3,250.8c-15.3,47.9-1979.2,2030.9-2103.6,2122.7C7682.7,5043.2,7600.4,5039.4,7516.1,4955.2z" /><path d="M5506.3,3758.9c-68.9-42.1-112.9-147.4-93.8-216.3c7.7-24.9,84.2-114.8,168.5-202.9l157-157l-2207-2207C1670.4-886.7,1325.9-1238.9,1325.9-1282.9c0-28.7,86.1-398.2,193.3-821.2l191.4-769.5l-782.9-784.8c-432.6-432.6-794.4-805.8-805.8-828.8c-40.2-80.4-24.9-158.9,44-227.8c74.6-74.7,162.7-86.1,241.2-34.5c26.8,17.2,398.1,380.9,825,805.8l775.2,773.3l775.2-193.3c526.4-132.1,792.4-191.4,830.7-183.8c44,9.6,558.9,513,2252.9,2208.9L8063.6,857.1l157-155c172.3-170.4,227.7-195.2,329.2-153.1c109.1,45.9,155,170.4,99.5,275.6c-34.4,63.2-2894.1,2919-2953.5,2949.6C5634.6,3804.8,5573.3,3799.1,5506.3,3758.9z M5485.3,2141.4c34.5-13.4,166.5-134,296.7-264.2c229.7-235.4,233.5-241.2,233.5-325.4c0-67-11.5-97.6-49.8-135.9c-65.1-65.1-158.9-82.3-229.7-45.9c-65.1,34.5-472.8,444.1-503.4,505.3c-47.9,93.8,0,222,99.5,264.1C5408.7,2174,5410.6,2174,5485.3,2141.4z M4650.7,1536.6c76.6-30.6,518.7-474.7,541.7-547.4c28.7-82.3-15.3-185.7-93.8-225.9c-70.8-38.3-122.5-38.3-189.5-3.8c-61.3,32.5-469,444.1-499.6,503.4c-47.9,93.8,0,222,99.5,264.1C4583.7,1559.5,4583.7,1559.5,4650.7,1536.6z M4112.9,677.1c139.7-101.5,461.3-449.8,474.7-514.9c30.6-134-107.2-271.8-243.1-241.2c-65.1,13.4-493.8,415.4-541.7,509.2c-45.9,90-34.5,164.6,38.3,237.3C3925.3,751.8,4007.6,755.6,4112.9,677.1z M3245.8,99.1c59.3-30.6,470.9-438.3,503.4-499.6c34.5-67,34.5-118.7-3.8-189.5c-40.2-78.5-143.6-122.5-224-93.8c-72.7,23-537.9,484.3-558.9,551.3C2918.4,16.8,3106,169.9,3245.8,99.1z M2899.3-967.1c233.5-231.6,264.1-271.8,264.1-327.3c0-128.2-88.1-212.5-224-212.5c-63.2,0-91.9,21-308.2,235.4c-130.2,128.3-250.7,262.2-266.1,298.6c-57.4,132.1,40.2,269.9,191.4,269.9C2633.2-702.9,2644.7-712.5,2899.3-967.1z" /></g></g>
+                                </svg>
+                                </span>
+                                Вакцинирај
+                            </button>
+                        </a>
+
+                    </span>
+                    <span class="ml-2">
+                        <a asp-action="ChipPet" asp-controller="ChipInsertion" asp-route-ownerId="@Model.Owner.Id" asp-route-petId="@Model.Pet.Id" style="text-decoration: none">
+                            <button type="button" class="btn btn-outline-primary btn-sm  @(!string.IsNullOrEmpty(Model.Pet.ChipNumber) ? "" : "custom-icon-btn") " asp-is-disabled=@(!string.IsNullOrEmpty(Model.Pet.ChipNumber))>
+                                <span class="vaccine_icon">
+                                    <?xml version="1.0" encoding="iso-8859-1" ?>
+                                    <!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+                                    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                         viewBox="0 0 238.804 238.804" style="enable-background:new 0 0 238.804 238.804;" xml:space="preserve">
+                                    <g>
+                                    <g>
+                                    <g>
+                                    <path d="M148.223,86.463H90.581c-2.274,0-4.117,1.842-4.117,4.117v57.642c0,2.276,1.844,4.117,4.117,4.117h57.642
+				                                            c2.274,0,4.117-1.842,4.117-4.117V90.581C152.34,88.305,150.497,86.463,148.223,86.463z M144.106,144.106H94.698V94.698h49.408
+				                                            V144.106z" />
+                                    <path d="M226.452,152.34c-5.36,0-9.888,3.452-11.593,8.235H168.81V78.229h46.049c1.705,4.782,6.232,8.235,11.593,8.235
+				                                            c6.811,0,12.352-5.541,12.352-12.352s-5.541-12.352-12.352-12.352c-5.36,0-9.888,3.452-11.593,8.235H168.81v-46.05
+				                                            c4.782-1.705,8.235-6.233,8.235-11.593C177.044,5.541,171.503,0,164.692,0c-6.811,0-12.352,5.541-12.352,12.352
+				                                            c0,5.36,3.452,9.888,8.235,11.593v46.049H78.229V23.945c4.782-1.705,8.235-6.233,8.235-11.593C86.463,5.541,80.923,0,74.111,0
+				                                            C67.3,0,61.76,5.541,61.76,12.352c0,5.36,3.452,9.888,8.235,11.593v46.049h-46.05c-1.705-4.782-6.233-8.235-11.593-8.235
+				                                            C5.541,61.76,0,67.3,0,74.111c0,6.811,5.541,12.352,12.352,12.352c5.36,0,9.888-3.452,11.593-8.235h46.049v82.346H23.945
+				                                            c-1.705-4.782-6.233-8.235-11.593-8.235C5.541,152.34,0,157.881,0,164.692c0,6.811,5.541,12.352,12.352,12.352
+				                                            c5.36,0,9.888-3.452,11.593-8.235h46.049v46.049c-4.782,1.705-8.235,6.233-8.235,11.593c0,6.811,5.541,12.352,12.352,12.352
+				                                            c6.811,0,12.352-5.541,12.352-12.352c0-5.36-3.452-9.888-8.235-11.593V168.81h82.346v46.049
+				                                            c-4.782,1.705-8.235,6.233-8.235,11.593c0,6.811,5.541,12.352,12.352,12.352c6.811,0,12.352-5.541,12.352-12.352
+				                                            c0-5.36-3.452-9.888-8.235-11.593V168.81h46.049c1.705,4.782,6.232,8.235,11.593,8.235c6.811,0,12.352-5.541,12.352-12.352
+				                                            C238.802,157.882,233.263,152.34,226.452,152.34z M226.452,69.994c2.27,0,4.117,1.845,4.117,4.117
+				                                            c0,2.272-1.847,4.117-4.117,4.117c-2.27,0-4.117-1.845-4.117-4.117C222.335,71.839,224.182,69.994,226.452,69.994z
+				                                             M12.352,78.229c-2.27,0-4.117-1.845-4.117-4.117s1.847-4.117,4.117-4.117c2.27,0,4.117,1.845,4.117,4.117
+				                                            S14.622,78.229,12.352,78.229z M12.352,168.81c-2.27,0-4.117-1.845-4.117-4.117c0-2.272,1.847-4.117,4.117-4.117
+				                                            c2.27,0,4.117,1.845,4.117,4.117C16.469,166.965,14.622,168.81,12.352,168.81z M74.111,230.569c-2.27,0-4.117-1.845-4.117-4.117
+				                                            c0-2.272,1.847-4.117,4.117-4.117c2.27,0,4.117,1.845,4.117,4.117C78.229,228.724,76.381,230.569,74.111,230.569z M74.111,16.469
+				                                            c-2.27,0-4.117-1.845-4.117-4.117c0-2.272,1.848-4.117,4.117-4.117c2.27,0,4.117,1.845,4.117,4.117
+				                                            C78.228,14.624,76.381,16.469,74.111,16.469z M78.229,160.575V78.229h82.346v82.346H78.229z M168.809,226.452
+				                                            c0.001,2.272-1.847,4.117-4.117,4.117s-4.117-1.845-4.117-4.117c0-2.272,1.847-4.117,4.117-4.117S168.809,224.18,168.809,226.452
+				                                            z M164.692,16.469c-2.27,0-4.117-1.845-4.117-4.117c0-2.272,1.847-4.117,4.117-4.117s4.117,1.845,4.117,4.117
+				                                            C168.809,14.624,166.962,16.469,164.692,16.469z M226.452,168.81c-2.27,0-4.117-1.845-4.117-4.117
+				                                            c0-2.272,1.847-4.117,4.117-4.117c2.27,0,4.117,1.845,4.117,4.117C230.569,166.965,228.722,168.81,226.452,168.81z" />
+                                                    </g>
+                                                </g>
+                                            </g>
+                                    <g>
+                                            </g>
+                                    <g>
+                                            </g>
+                                    <g>
+                                            </g>
+                                    <g>
+                                            </g>
+                                    <g>
+                                            </g>
+                                    <g>
+                                            </g>
+                                    <g>
+                                            </g>
+                                    <g>
+                                            </g>
+                                    <g>
+                                            </g>
+                                    <g>
+                                            </g>
+                                    <g>
+                                            </g>
+                                    <g>
+                                            </g>
+                                    <g>
+                                            </g>
+                                    <g>
+                                            </g>
+                                    <g>
+                                            </g>
+                                            </svg>
+
+                                </span>
+
+                                Чипувај
+                            </button>
+                        </a>
+                     
+                    </span>
+
+                </h5>
+                <div class="col">
+                    <div class="row form-group">
+                        <label class="col-3 ">Име:</label>
+                        <div class="col-6">@Model.Pet.Name</div>
+                    </div>
+                    <div class="row form-group ">
+                        <label class="col-3 ">Раса:</label>
+                        <div class="col-6">@Model.Pet.Species.Name</div>
+                    </div>
+                    <div class="row form-group ">
+                        <label class="col-3 ">Врста:</label>
+                        <div class="col-6">@Model.Pet.Breed.Name</div>
+                    </div>
+                    <div class="row form-group ">
+                        <label class="col-3 ">Пол:</label>
+                        <div class="@(@Model.Pet.Sex != null ? "" : "text-danger") col-6">@(Model.Pet.Sex ?? "Нема податоци")</div>
+                    </div>
+                    <div class="row form-group ">
+                        <label class="col-3">Датум на раѓање:</label>
+                        <div class="@(@Model.Pet.DateOfBirth != null ? "" : "text-danger") col-6">
+                            @(@Model.Pet.DateOfBirth.HasValue ? @Model.Pet.DateOfBirth.Value.ToShortDateString() : "Нема податоци")
+                        </div>
+                    </div>
+                    <div class="row form-group ">
+                        <label class="col-3">Старост:</label>
+                        <div class="col-6">
+                            @(@Model.Pet.AccurateAge)
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <label class="col-3">Алергии:</label>
+                        <div class="@(@Model.Pet.Alergy!= null ? "" : "text-danger") col-6">@(@Model.Pet.Alergy ?? "Нема податоци")</div>
+                    </div>
+                    <div class="row form-group">
+                        <label class="col-3">Последна посета:</label>
+                        <div class="@(@Model.Pet.LastCheckup.HasValue ? "" : "text-info") col-6">@(@Model.Pet.LastCheckup.HasValue ? @Model.Pet.LastCheckup.Value.ToShortDateString() : "Прва посета")</div>
+                    </div>
+                    <div class="row form-group">
+                        <label class="col-3">Број на чип:</label>
+                        <div class="@(string.IsNullOrEmpty(@Model.Pet.ChipNumber) ? "text-danger" : "") col-6">@(string.IsNullOrEmpty(@Model.Pet.ChipNumber) ? "Нема податоци" : @Model.Pet.ChipNumber)</div>
+                    </div>
+                    <div class="row form-group">
+                        <label class="col-3">Опис:</label>
+                        <div class="@(string.IsNullOrEmpty(@Model.Pet.Description) ? "text-danger" : "") col-6">@(string.IsNullOrEmpty(@Model.Pet.Description) ? "Нема податоци" : @Model.Pet.Description)</div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="col">
+
+                <div class="row no-gutters">
+                    <h5>
+                        Сопственик
+                        <span class="pl-1">
+                            <button data-toggle="tooltip" data-placement="top" title="Измени податоци"
+                                    onclick="showEditOwnerModal(@Model.Owner.Id, @Model.Pet.Id)"
+                                    class="btn btn-outline-info btn-sm rounded-circle">
+                                <i class="fa fa-pencil fa-sm" aria-hidden="true"></i>
+                            </button>
+                        </span>
+                    </h5>
+                    <a class="ml-4" style="cursor: pointer" asp-action="OwnerDetails" asp-controller="OwnersAndPetsManagement" asp-route-id="@Model.Owner.Id">
+                        Повеќе
+                    </a>
+                </div>
+                <div class="col">
+                    <div class="row form-group">
+                        <label class="col-3">Име:</label>
+                        <div class="col-6">@Model.Owner.Name</div>
+                    </div>
+                    <div class="row form-group ">
+                        <label class="col-3 ">Адреса на живеење:</label>
+                        <div class="col-6">@Model.Owner.Address, @Model.Owner.Location</div>
+                    </div>
+                    <div class="row form-group ">
+                        <label class="col-3 ">Општина:</label>
+                        <div class="@(@Model.Owner.Municipality != null ? "" : "text-danger") col-6">@(@Model.Owner.Municipality ?? "Нема податоци")</div>
+                    </div>
+                    <div class="row form-group">
+                        <label class="col-3">
+                            Телефонски број:
+                        </label>
+                        <div class="@(@Model.Owner.PhoneNumber != null ? "" : "text-danger") col-6">@(@Model.Owner.PhoneNumber ?? "Нема податоци")</div>
+
+                    </div>
+                    <div class="row form-group ">
+                        <label class="col-3 "> ЕМБГ:</label>
+                        <div class="@(@Model.Owner.SSN != null ? "" : "text-danger") col-6">@(@Model.Owner.SSN ?? "Нема податоци")</div>
+
+                    </div>
+                    <div class="row form-group ">
+                        <label class="col-3 ">Емаил</label>
+
+                        <div class="@(@Model.Owner.Email != null ? "" : "text-danger") col-6">@(@Model.Owner.Email ?? "Нема податоци")</div>
+                    </div>
+                    <div class="row form-group ">
+                        <label class="col-3 ">Останато</label>
+                        <div class="@(@Model.Owner.AdditionalInfo != null ? "" : "text-danger") col-6">@(@Model.Owner.AdditionalInfo ?? "Нема податоци")</div>
+                    </div>
+                    <div class="row form-group">
+                        <label class="col-3">Други миленици:</label>
+                        <div class="@(!Model.Owner.Pets.Where(p => p.Id != @Model.Pet.Id).ToList().Any() ? "text-danger" : "") col-6">
+                            @if (!Model.Owner.Pets.Where(p => p.Id != @Model.Pet.Id).ToList().Any())
+                            {
+                                @("Нема")
+                            }
+                            @foreach (var pet in Model.Owner.Pets.Where(p => p.Id != @Model.Pet.Id))
+                            {
+                                <h6 style="display: inline">
+                                    <a asp-action="PetDetails" asp-route-ownerId="@pet.OwnerId" asp-route-petId="@pet.Id" class="badge badge-pill badge-info">
+                                        @(@pet.Name)
+                                    </a>
+                                </h6>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row-12 pt-5">
+        <div class="card shadow bg-white rounded ">
+            <div class="card-header bg-primary">
+                <nav>
+                    <div class="nav nav-tabs card-header-tabs pet-tab" id="nav-tab" role="tablist">
+                        <a class="nav-item nav-link active" id="nav-checkups-tab" data-toggle="tab" href="#nav-checkups" role="tab" aria-controls="nav-checkups" aria-selected="true">Прегледи</a>
+                        <a class="nav-item nav-link " id="nav-surgeries-tab" data-toggle="tab" href="#nav-surgeries" role="tab" aria-controls="nav-surgeries" aria-selected="false">Операции</a>
+                        <a class="nav-item nav-link " id="nav-vaccinations-tab" data-toggle="tab" href="#nav-vaccinations" role="tab" aria-controls="nav-vaccinations" aria-selected="false">Вакцинации</a>
+
+
+                        <a class="nav-item nav-link " id="nav-chipInsertion-tab" data-toggle="tab" href="#nav-chipInsertion" role="tab" aria-controls="nav-chipInsertion" aria-selected="false">Чипување</a>
+                        <button type="button" class="btn btn-light btn-sm ml-auto mb-2" onclick="downloadPdf(@Model.Owner.Id, @Model.Pet.Id)">
+                            <span>
+                                <i class="fa fa-file-pdf"></i>
+                            </span>
+                            Преземи PDF
+                        </button>
+
+                    </div>
+
+                </nav>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="nav-tabContent">
+                    <div class="tab-pane fade show active" id="nav-checkups" role="tabpanel" aria-labelledby="nav-checkups-tab">
+                        @if (!Model.Checkups.Any())
+                        {
+                            <h6 class="text-info mt-3 ml-2">Нема заведени прегледи за миленикот</h6>
+                        }
+                        <ul class="list-group-flush p-0 text-left">
+
+
+                            @for (int i = 0; i < Model.Checkups.Count(); i++)
+                            {
+                                <a class="list-group-item text-secondary font-weight-bold" data-toggle="collapse" href="#details-@i" role="button">@Model.Checkups[i].Date.Value.ToShortDateString(), @Model.Checkups[i].CheckupType @Model.Checkups[i].Id</a>
+                                <div class="collapse pl-5" id="details-@i">
+
+                                    <div class="row">
+                                        <div class="col-2 font-weight-bold">Анамнеза:</div>
+                                        <div class="@(@Model.Checkups[i].Anamnesis != null ? "" : "text-info") col-10">@(@Model.Checkups[i].Anamnesis ?? "Нема податоци")</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-2 font-weight-bold">Клиничка слика:</div>
+                                        <div class="@(@Model.Checkups[i].ClinicalPicture != null ? "" : "text-info") col-10">@(@Model.Checkups[i].ClinicalPicture ?? "Нема податоци") </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-2 font-weight-bold">Дијагноза:</div>
+                                        <div class="@(@Model.Checkups[i].Diagnosis != null ? "" : "text-info") col-10">@(@Model.Checkups[i].Diagnosis ?? "Нема податоци")</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-2 font-weight-bold">Лаб. анализа:</div>
+                                        <div class="@(@Model.Checkups[i].LabAnalysis != null ? "" : "text-info") col-10">@(@Model.Checkups[i].LabAnalysis ?? "Нема податоци")</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-2 font-weight-bold">Препорака:</div>
+                                        <div class="@(@Model.Checkups[i].Advice != null ? "" : "text-info") col-10">@(@Model.Checkups[i].Advice ?? "Нема податоци")</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-2 font-weight-bold">Контролен преглед:</div>
+                                        <div class="@(@Model.Checkups[i].NextControlCheckup.HasValue ? "" : "text-info") col-6">@(!@Model.Checkups[i].NextControlCheckup.HasValue ? "Нема податоци" : @Model.Checkups[i].NextControlCheckup.Value.ToShortDateString())</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-2 font-weight-bold">Старост на ден на преглед:</div>
+                                        <div class="@(!string.IsNullOrEmpty(@Model.Checkups[i].AccurateAgeOnCheckupDate) ? "" : "text-info") col-6">@(@Model.Checkups[i].AccurateAgeOnCheckupDate)</div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-2">
+                                            <div class="font-weight-bold">Терапија: </div>
+                                        </div>
+                                        <div class="col-10">
+                                            @foreach (var item in @Model.Checkups[i].CheckupDetails)
+                                            {
+                                                <div>
+                                                    @item.Amount @item.Uom, @item.MedicamentName, @item.MedicamentApplication
+                                                </div>
+
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-2 font-weight-bold">Наплатено:</div>
+                                        <div class="@(@Model.Checkups[i].PaidSum != null ? "" : "text-info") col-6">@(@Model.Checkups[i].PaidSum.HasValue ? @Model.Checkups[i].PaidSum.Value.ToString() + "ден" : "Нема податоци")</div>
+                                    </div>
+
+                                </div>
+                            }
+
+                        </ul>
+
+                    </div>
+                    <div class="tab-pane fade" id="nav-surgeries" role="tabpanel" aria-labelledby="nav-surgeries-tab">
+                        @if (!Model.SurgicalInterventions.Any())
+                        {
+                            <h6 class="text-info mt-3 ml-2">Нема заведени операции за миленикот</h6>
+                        }
+
+                        <ul class="list-group-flush p-0 text-left">
+                            @for (int i = 0; i < Model.SurgicalInterventions.Count(); i++)
+                            {
+                                <a class="list-group-item text-secondary font-weight-bold" data-toggle="collapse" href="#sur-@i" role="button">
+                                    @Model.SurgicalInterventions[i].Date.Value.ToShortDateString(), @Model.SurgicalInterventions[i].CheckupType @Model.SurgicalInterventions[i].Id
+
+                                </a>
+                                <div class="collapse pl-5" id="sur-@i">
+
+                                    <div class="row">
+                                        <div class="col-2 font-weight-bold">Анамнеза:</div>
+                                        <div class="@(@Model.SurgicalInterventions[i].Anamnesis != null ? "" : "text-info") col-10">@(@Model.SurgicalInterventions[i].Anamnesis ?? "Нема податоци")</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-2 font-weight-bold">Клиничка слика:</div>
+                                        <div class="@(@Model.SurgicalInterventions[i].ClinicalPicture != null ? "" : "text-info") col-10">@(@Model.SurgicalInterventions[i].ClinicalPicture ?? "Нема податоци") </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-2 font-weight-bold">Дијагноза:</div>
+                                        <div class="@(@Model.SurgicalInterventions[i].Diagnosis != null ? "" : "text-info") col-10">@(@Model.SurgicalInterventions[i].Diagnosis ?? "Нема податоци")</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-2 font-weight-bold">Лаб. анализа:</div>
+                                        <div class="@(@Model.SurgicalInterventions[i].LabAnalysis != null ? "" : "text-info") col-10">@(@Model.SurgicalInterventions[i].LabAnalysis ?? "Нема податоци")</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-2 font-weight-bold">Хируршки зафат:</div>
+                                        <div class="@(@Model.SurgicalInterventions[i].SurgicalIntervention != null ? "" : "text-info") col-10">@(@Model.SurgicalInterventions[i].SurgicalIntervention ?? "Нема податоци")</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-2 font-weight-bold">Препорака:</div>
+                                        <div class="@(@Model.SurgicalInterventions[i].Advice != null ? "" : "text-info") col-10">@(@Model.SurgicalInterventions[i].Advice ?? "Нема податоци")</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-2 font-weight-bold">Контролен преглед:</div>
+                                        <div class="@(@Model.SurgicalInterventions[i].NextControlCheckup.HasValue ? "" : "text-info") col-6">@(!@Model.SurgicalInterventions[i].NextControlCheckup.HasValue ? "Нема податоци" : @Model.SurgicalInterventions[i].NextControlCheckup.Value.ToShortDateString())</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-2 font-weight-bold">Старост на ден на преглед:</div>
+                                        <div class="@(!string.IsNullOrEmpty(@Model.SurgicalInterventions[i].AccurateAgeOnCheckupDate) ? "" : "text-info") col-6">@(@Model.SurgicalInterventions[i].AccurateAgeOnCheckupDate)</div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-2">
+                                            <div class="font-weight-bold">Терапија: </div>
+                                        </div>
+                                        <div class="col-10">
+                                            @foreach (var item in @Model.SurgicalInterventions[i].CheckupDetails)
+                                            {
+                                                <div>
+                                                    @item.Amount @item.Uom, @item.MedicamentName, @item.MedicamentApplication
+                                                </div>
+
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-2 font-weight-bold">Наплатено:</div>
+                                        <div class="@(@Model.SurgicalInterventions[i].PaidSum != null ? "" : "text-info") col-6">@(@Model.SurgicalInterventions[i].PaidSum.HasValue ? @Model.SurgicalInterventions[i].PaidSum.Value.ToString() + "ден" : "Нема податоци")</div>
+                                    </div>
+
+
+
+                                </div>
+                            }
+
+                        </ul>
+                    </div>
+                    <div class="tab-pane fade" id="nav-vaccinations" role="tabpanel" aria-labelledby="nav-vaccinations-tab">
+                        @if (!Model.Vaccinations.Any())
+                        {
+                            <h6 class="text-info mt-3 ml-2">Нема заведени вакцинацци за миленикот</h6>
+                        }
+
+                        <ul class="list-group-flush p-0 text-left">
+                            @for (int i = 0; i < Model.Vaccinations.Count(); i++)
+                            {
+                                <a class="list-group-item text-secondary font-weight-bold" data-toggle="collapse" href="#vacc-@i" role="button">@Model.Vaccinations[i].Date.Value.ToShortDateString(), @Model.Vaccinations[i].CheckupType, @Model.Vaccinations[i].Id</a>
+
+                                <div class="collapse pl-5" id="vacc-@i">
+                                    <div class="row">
+                                        <div class="col-2 font-weight-bold">Старост на ден на преглед:</div>
+                                        <div class="@(!string.IsNullOrEmpty(@Model.Vaccinations[i].AccurateAgeOnCheckupDate) ? "" : "text-info") col-6">@(@Model.Vaccinations[i].AccurateAgeOnCheckupDate)</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-2 font-weight-bold">Нареден термин за вакцинација:</div>
+                                        <div class="@(@Model.Vaccinations[i].NextVaccinationDate.HasValue ? "" : "text-info") col-6">@(!@Model.Vaccinations[i].NextVaccinationDate.HasValue ? "Нема податоци" : @Model.Vaccinations[i].NextVaccinationDate.Value.ToShortDateString())</div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-2">
+                                            <div class="font-weight-bold">Терапија: </div>
+                                        </div>
+                                        <div class="col-10">
+                                            @foreach (var item in @Model.Vaccinations[i].CheckupDetails)
+                                            {
+                                                <div>
+                                                    @item.Amount @item.Uom, @item.MedicamentName, @item.MedicamentApplication
+                                                </div>
+
+                                            }
+
+
+                                        </div>
+
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-2 font-weight-bold">Наплатено:</div>
+                                        <div class="@(@Model.Vaccinations[i].PaidSum != null ? "" : "text-info") col-6">@(@Model.Vaccinations[i].PaidSum.HasValue ? @Model.Vaccinations[i].PaidSum.Value.ToString() + "ден" : "Нема податоци")</div>
+                                    </div>
+
+                                </div>
+
+                            }
+                        </ul>
+                    </div>
+                    <div class="tab-pane fade" id="nav-chipInsertion" role="tabpanel" aria-labelledby="nav-chipInsertion-tab">
+                        @if (!Model.ChipInsertionCheckups.Any())
+                        {
+                            <h6 class="text-info mt-3 ml-2">Нема заведено чипување за миленикот</h6>
+                        }
+
+
+                        <ul class="list-group-flush p-0 text-left">
+                            @for (int i = 0; i < Model.ChipInsertionCheckups.Count(); i++)
+                            {
+                                <a class="list-group-item text-secondary font-weight-bold" data-toggle="collapse" href="#chip-@i" role="button">@Model.ChipInsertionCheckups[i].Date.Value.ToShortDateString(), @Model.ChipInsertionCheckups[i].CheckupType</a>
+
+                                <div class="collapse pl-5" id="chip-@i">
+                                    <div class="row">
+                                        <div class="col-2 font-weight-bold">Старост на ден на преглед:</div>
+                                        <div class="@(!string.IsNullOrEmpty(@Model.ChipInsertionCheckups[i].AccurateAgeOnCheckupDate) ? "" : "text-info") col-6">@(@Model.ChipInsertionCheckups[i].AccurateAgeOnCheckupDate)</div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-2">
+                                            <div class="font-weight-bold">Терапија: </div>
+                                        </div>
+                                        <div class="col-10">
+                                            @foreach (var item in @Model.ChipInsertionCheckups[i].CheckupDetails)
+                                            {
+                                                <div>
+                                                    @item.Amount @item.Uom, @item.MedicamentName, @item.MedicamentApplication
+                                                </div>
+
+                                            }
+                                        </div>
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-2 font-weight-bold">Наплатено:</div>
+                                        <div class="@(@Model.ChipInsertionCheckups[i].PaidSum != null ? "" : "text-info") col-6">@(@Model.ChipInsertionCheckups[i].PaidSum.HasValue ? @Model.ChipInsertionCheckups[i].PaidSum.Value.ToString() + "ден" : "Нема податоци")</div>
+                                    </div>
+                                </div>
+
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="~/js/customTooltip.js"></script>
+<script>
+    $(document).ready(function () {
+        $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+    });
+
+    function downloadPdf(ownerId, petId) {
+        const url = "@Url.Action("DownloadPdf")?ownerId=" + ownerId + "&petId=" + petId;
+        window.open(url)
+    }
+
+    function showEditOwnerModal(ownerId, petId) {
+        const url = "@Url.Action("GetEditOwnerModal")?ownerId=" + ownerId + "&petId=" + petId;
+        $.get(url, (data) => {
+            bootbox.dialog({
+                title: "@Model.Owner.Name",
+                message: data
+            })
+        })
+    }
+
+    function showEditPetModal(ownerId, petId) {
+        const url = "@Url.Action("GetEditPetModal")?ownerId=" + ownerId + "&petId=" + petId;
+        $.get(url, (data) => {
+            bootbox.dialog({
+                title: "@Model.Pet.Name",
+                message: data
+            })
+        })
+    }
+
+</script>

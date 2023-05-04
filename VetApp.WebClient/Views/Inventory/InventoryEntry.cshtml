@@ -1,0 +1,120 @@
+@{
+    @model InventoryEntryViewModel
+}
+<link href="~/lib/jqueryui/jquery-ui.min.css" />
+
+<style>
+    .form-group-material {
+        position: relative;
+        margin-bottom: 0px !important;
+    }
+</style>
+<div class="row navbar navbar-light bg-light mb-3">
+    <h3>Внес на роба</h3>
+</div>
+<div id="modalPlaceholder"></div>
+
+<section class="forms">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 ">
+                <form asp-action="PostAddMore" class="text-left form-validate">
+
+                    <div class="card mb-5 mt-3 ">
+
+                        <div class="row px-5 py-5">
+                            <div class="col form-group">
+                                <label for="">Добавувач</label>
+                                <select asp-for="SupplierId" asp-items="@Model.SuppliersList" class="form-control"
+                                    id="supplierSelect">
+                                    <option>Одбери добавувач</option>
+                                </select>
+                            </div>
+                            <div class="col form-group">
+                                <label for="">Датум</label>
+                                @Html.EditorFor(model => model.EntryDate , "{0:dd-MM-yyyy}", new { htmlAttributes = new
+                                { @class = "datepicker form-control", @value="01/01/2012" } })
+
+                            </div>
+                            <div class="col">
+                                <label for="">Опис</label>
+
+                                <input type="freetext" class="form-control" asp-for="Description">
+
+                            </div>
+                            <div class="col ">
+                                <button class="btn btn-light btn-md mb-2 float-right">Нов добавувач</button>
+                                <button type="button" class="btn btn btn-success btn-md float-right" data-toggle="modal"
+                                    data-target="#medicamentModal" data-url="@Url.Action("CreateNewMedicament")">
+                                    Нов производ </button>
+                            </div>
+
+
+
+                        </div>
+                    </div>
+                    <div class="card ">
+                        <div class="card-body">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <br />
+                            <div class="col-sm-12">
+                                @Html.Partial("_AddMorePartialView", @Model.ResupplyDetailsViewModel)
+                            </div>
+                            <div id="addAddMoreDiv"></div>
+                            <a id="add_row" class="btn btn-primary float-right">Додади ред</a>
+                            <br />
+                            <br />
+                            <input type="submit" class="btn btn-primary float-left" value="Save" />
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div class="row float-right mt-3 mr-3" id="total">
+
+    </div>
+    </div>
+</section>
+@section Scripts {
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootbox/bootbox.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="~/lib/jqueryui/jquery-ui.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#datepicker").datepicker();
+    })
+    $(function () {
+        var placeholderElement = $('#modalPlaceholder');
+
+        $('button[data-toggle="modal"]').click(function (event) {
+            let url = $(this).data('url');
+            $.get(url).done(function (data) {
+                jQuery.noConflict();
+                placeholderElement.html(data);
+                placeholderElement.find('.modal').modal('show');
+            });
+        })
+    })
+
+    document.getElementById("total").innerHTML = InventoryDetailsTotal();
+    
+    $('#add_row').on('click', function () {
+        $.ajax({
+            url: '@Url.Action("AddMorePartialView")',
+            type: 'GET',
+            data: {
+            },
+            success: function (result) {
+                $('#addAddMoreDiv').append(result);
+
+            },
+            error: function () {
+            }
+        });
+    });
+</script>
+}
+@{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}

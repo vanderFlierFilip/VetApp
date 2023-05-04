@@ -1,0 +1,142 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    @model BaseCheckupViewModel
+
+}
+<style>
+    .dropleft .dropdown-menu {
+        top: 20px;
+        min-width: 500px;
+    }
+
+    .dropleft:hover .dropdown-menu {
+        display: block;
+        margin-top: 0;
+    }
+</style>
+
+<div class="row navbar bg-white mb-3 justify-content-between">
+    <div>
+        <a asp-action="PetDetails" asp-controller="PetDetailsPage" asp-route-ownerId="@Model.Owner.Id" asp-route-petId="@Model.Pet.Id">
+            &lt; Назад кон здравствен картон
+        </a>
+    </div>
+    <div>
+        <div class="row">
+            <div class="col">
+                <div class="">
+                    <div class="dropleft">
+                        <button style="cursor:default" class="btn btn-outline-success" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-paw" aria-hidden="true"></i>
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <div class="col">
+                                <div class="row form-group">
+                                    <label class="col-3 ">Име:</label>
+                                    <div class="col-6">@Model.Pet.Name</div>
+                                </div>
+                                <div class="row form-group ">
+                                    <label class="col-3 ">Раса:</label>
+                                    <div class="col-6">@Model.Pet.Species.Name</div>
+                                </div>
+                                <div class="row form-group ">
+                                    <label class="col-3 ">Врста:</label>
+                                    <div class="col-6">@Model.Pet.AnimalBreed.Name</div>
+                                </div>
+                                <div class="row form-group ">
+                                    <label class="col-3 ">Пол:</label>
+                                    <div class="@(@Model.Pet.Sex != null ? "" : "text-danger") col-6">@(Model.Pet.Sex ?? "Нема податоци")</div>
+                                </div>
+                                <div class="row form-group ">
+                                    <label class="col-3">Датум на раѓање:</label>
+                                    <div class="@(@Model.Pet.DateOfBirth != null ? "" : "text-danger") col-6">
+                                        @(@Model.Pet.DateOfBirth.HasValue ? @Model.Pet.DateOfBirth.Value.ToShortDateString() : "Нема податоци")
+                                    </div>
+                                </div>
+                                <div class="row form-group ">
+                                    <label class="col-3">Старост:</label>
+                                    <div class="col-6">
+                                        @(@Model.Pet.AccurateAge)
+                                    </div>
+                                </div>
+                                <div class="row form-group">
+                                    <label class="col-3">Алергии:</label>
+                                    <div class="@(@Model.Pet.Alergy!= null ? "" : "text-danger") col-6">@(@Model.Pet.Alergy ?? "Нема податоци")</div>
+                                </div>
+                                <div class="row form-group">
+                                    <label class="col-3">Последна посета:</label>
+                                    <div class="@(@Model.Pet.LastCheckup.HasValue ? "" : "text-info") col-6">@(@Model.Pet.LastCheckup.HasValue ? @Model.Pet.LastCheckup.Value.ToShortDateString() : "Прва посета")</div>
+                                </div>
+                                <div class="row form-group">
+                                    <label class="col-3">Број на чип:</label>
+                                    <div class="@(string.IsNullOrEmpty(@Model.Pet.ChipNumber) ? "text-danger" : "") col-6">@(string.IsNullOrEmpty(@Model.Pet.ChipNumber) ? "Нема податоци" : @Model.Pet.ChipNumber)</div>
+                                </div>
+                                <div class="row form-group">
+                                    <label class="col-3">Опис:</label>
+                                    <div class="@(string.IsNullOrEmpty(@Model.Pet.Description) ? "text-danger" : "") col-6">@(string.IsNullOrEmpty(@Model.Pet.Description) ? "Нема податоци" : @Model.Pet.Description)</div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="">
+                    <div class="dropleft">
+                        <button style="cursor:default" class="btn btn-outline-success" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-user" aria-hidden="true"></i>
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <div class="col">
+                                <div class="row form-group">
+                                    <label class="col-3">Име:</label>
+                                    <div class="col-6">@Model.Owner.FullName</div>
+                                </div>
+                                <div class="row form-group ">
+                                    <label class="col-3 ">Адреса на живеење:</label>
+                                    <div class="col-6">@Model.Owner.Address, @Model.Owner.Location</div>
+                                </div>
+                                <div class="row form-group ">
+                                    <label class="col-3 ">Општина:</label>
+                                    <div class="@(@Model.Owner.Municipality != null ? "" : "text-danger") col-6">@(@Model.Owner.Municipality ?? "Нема податоци")</div>
+                                </div>
+                                <div class="row form-group">
+                                    <label class="col-3">
+                                        Телефонски број:
+                                    </label>
+                                    <div class="@(@Model.Owner.PhoneNumber != null ? "" : "text-danger") col-6">@(@Model.Owner.PhoneNumber ?? "Нема податоци")</div>
+
+                                </div>
+                                <div class="row form-group ">
+                                    <label class="col-3 "> ЕМБГ:</label>
+                                    <div class="@(@Model.Owner.SSN != null ? "" : "text-danger") col-6">@(@Model.Owner.SSN ?? "Нема податоци")</div>
+
+                                </div>
+                                <div class="row form-group ">
+                                    <label class="col-3 ">Емаил</label>
+
+                                    <div class="@(@Model.Owner.Email != null ? "" : "text-danger") col-6">@(@Model.Owner.Email ?? "Нема податоци")</div>
+                                </div>
+                                <div class="row form-group ">
+                                    <label class="col-3 ">Останато</label>
+                                    <div class="@(@Model.Owner.AdditionalInfo != null ? "" : "text-danger") col-6">@(@Model.Owner.AdditionalInfo ?? "Нема податоци")</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+</div>
+

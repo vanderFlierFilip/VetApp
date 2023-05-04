@@ -1,0 +1,150 @@
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+    
+*@
+@using  VDMJasminka.WebClient.Extensions;
+@{
+    @model IEnumerable<PetModel>
+}
+
+@if (@Model.Any())
+{
+    
+<table class="table"> 
+            <thead>
+                <tr>
+                    <th>
+                        Име
+                    </th>
+                     <th>
+                        Број на чип
+                    </th>
+                     <th>
+                        Врста
+                    </th>
+                     <th>
+                        Раса
+                    </th>
+                     <th>
+                        Датум на раѓање
+                    </th>
+                     <th>
+                        Пол
+                    </th>
+                     <th>
+                        Алергија
+                    </th>
+                    <th>
+                        Последна посета
+                    </th>
+                    <th>
+                        Акции
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (PetModel p in @Model)
+                {
+                <tr id="row_@p.PetId">
+                    <td>
+                        @p.Name
+                    </td>
+                    <td>
+                        @p.ChipNumber
+                    </td>
+                      <td>
+                        @p.Species.Type.TranslateAnimalType()
+                    </td>
+                    <td>
+                        @p.Breed.Name
+                    </td>
+                      <td>
+
+                        @if (@p.DateOfBirth != null) 
+                        {
+                            @p.DateOfBirth.Value.ToShortDateString();
+                        }
+                        else 
+                        {
+                            @p.DateOfBirth
+                        }
+                    </td>
+                      <td>
+                        @p.Sex
+                    </td>
+                    <td>
+                        @p.Alergy
+                    </td>
+                    <td>
+                        @if (@p.LastCheckup != null)
+                        {
+                            @p.LastCheckup.Value.ToShortDateString();
+                        }
+                        else 
+                        {
+                            @p.LastCheckup
+                        }
+                    </td>
+                      <td>
+                        <div class="btn-group btn-group-sm">
+                            <a class="btn btn-success btn-sm" asp-action="EditPet" asp-route-petId="@p.PetId">
+                                Промени
+                            </a>
+                            <button onclick="DeletePet(@p.PetId)"
+                            class="btn btn-danger btn-sm rounded-0 rounded-0">Избриши</button>
+
+                        </div>
+                    </td>
+                </tr>
+                }
+
+            </tbody>
+        </table>
+    
+}
+else {
+         <hr />
+         <h5 class="pt-3">Овој сопственик нема заведени миленици</h5>
+       
+}
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/bootbox/bootbox.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+
+<script>
+       var DeletePet = function (id) {
+            bootbox.confirm({
+                message: "Дали сте сигурни?",
+                buttons: {
+                    confirm: {
+                        label: 'Да',
+                        className: 'btn-success',
+                    },
+                    cancel: {
+                        label: "Не",
+                        className: "btn-danger",
+                    },
+
+                },
+                callback: (result) => {
+                    if (result) {
+                        deletePet(id);
+
+                    }
+                }
+            })
+        }
+
+        var deletePet = function (petId) {
+            $.ajax({
+                type: "POST",
+                url: "/OwnersAndPetsManagement/DeletePet",
+                data: { petId: petId },
+                success: function (result) {
+                    $("#row_" + petId).remove();
+                }
+            })
+        }
+
+</script>

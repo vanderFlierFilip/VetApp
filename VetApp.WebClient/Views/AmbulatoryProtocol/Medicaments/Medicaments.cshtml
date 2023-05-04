@@ -1,0 +1,167 @@
+@using VDMJasminka.Core.Inventory.MedicamentAggregate
+@using X.PagedList
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+@{
+    @model IEnumerable<Medicament>
+    ViewData["Title"] = "Лекови и материјали";
+    var pagedList = (IPagedList)ViewBag.PageList;
+}
+
+<div class="row navbar navbar-light bg-light mb-3">
+    <h3>@ViewData["Title"]</h3>
+</div>
+<div id="modalPlaceholder"></div>
+<div class="row-12">
+
+    <form asp-action="Medicaments" method="get" class="col-6">
+        <div class="form-actions mb-2">
+            <div class="col-6">
+                <p>
+                    Пребарај по име: <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]"
+                        class="form-control" />
+                </p>
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">Пребарај</button> |
+                <a asp-action="Medicaments" asp-route-pageNumber=1>Прикажи цела листа</a>
+            </div>
+        </div>
+    </form>
+    <div class="col-12 ">
+        <button class="btn btn-primary mb-3 mr-5 float-right" data-toggle="modal" data-target="#medicamentModal"
+            data-url="@Url.Action("CreateMedicament")"> Додади нов </button>
+    </div>
+</div>
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>
+                Име
+            </th>
+            <th>
+                Минимална состојба
+            </th>
+            <th>
+                Единица мера
+            </th>
+            <th>
+                Цена
+            </th>
+            <th>
+                Материјал
+
+            </th>
+            <th>
+                Акции
+
+            </th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (Medicament b in ViewBag.PageList)
+        {
+            <tr id="row_@b.Id">
+                <td>
+                    @Html.DisplayFor(modelItem => b.MedicamentDetails.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => b.MedicamentDetails.MinimalAmount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => b.MedicamentDetails.Uom)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => b.MedicamentDetails.Price)
+                </td>
+                <td>
+                    @{
+                        var material = (bool)b.MedicamentDetails.IsMaterial;
+                        @Html.CheckBoxFor(modelItem => material, new {@onclick="return false"})
+                    }
+
+                </td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <a class="btn btn-primary btn-sm" id="notImplemented" onclick=featureNotImplementedYet(); >
+                            Детали
+                        </a>
+
+                        <a class="btn btn-success btn-sm" asp-action="EditMedicament" asp-route-ownerId="@b.Id">
+                            Промени
+                        </a>
+                            <button onclick="DeleteMedicament(@b.Id)" type="submit" class="btn btn-danger btn-sm rounded-0 rounded-0">Избриши</button>
+                    </div>
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+</table>
+
+@Html.PagedListPager(
+pagedList,
+pageNumber => Url.Action("Medicaments", new { pageNumber , searchString = ViewBag.Search }),
+new PagedListRenderOptions{
+PageClasses = new string[] { "page-link" },
+UlElementClasses = new string[] { "pagination" },
+LiElementClasses = new string[] { "page-item" },
+DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+DisplayLinkToLastPage = PagedListDisplayMode.Always
+}
+)
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+<script src="~/lib/bootbox/bootbox.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+<script>
+   var DeleteMedicament = function (id) {
+            bootbox.confirm({
+                message: "Дали сте сигурни?",
+                buttons: {
+                    confirm: {
+                        label: 'Да',
+                        className: 'btn-success',
+                    },
+                    cancel: {
+                        label: "Не",
+                        className: "btn-danger",
+                    },
+
+                },
+                callback: (result) => {
+                    if (result) {
+                        deleteMed(id);
+
+                    }
+                }
+            })
+        }
+
+        var deleteMed = function (medId) {
+            $.ajax({
+                type: "POST",
+                url: "/Medicaments/DeleteMedicament",
+                data: { id: medId },
+                success: function (result) {
+                    $("#row_" +  medId).remove();
+                }
+            })
+        }
+
+    $(function () {
+        var placeholderElement = $('#modalPlaceholder');
+
+        $('button[data-toggle="modal"]').click(function (event) {
+            let url = $(this).data('url');
+            $.get(url).done(function (data) {
+                jQuery.noConflict();
+                placeholderElement.html(data);
+                placeholderElement.find('.modal').modal('show');
+            });
+        })
+    })
+</script>

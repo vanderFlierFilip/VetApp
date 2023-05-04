@@ -1,0 +1,215 @@
+﻿@using VDMJasminka.Shared.ViewModels
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+
+    @model PetDetailsViewModel
+}
+<div class="container pt-3">
+    <div class="row mb-3">
+        <div class="col" style="width: 50%">
+            <h3>Податоци за миленик</h3>
+
+            <div class="row py-1">
+                <div class="col col-3 font-weight-bold" style="text-align:left">Име:</div>
+                <div class="col col-8" style="text-align:left">@Model.Pet.Name</div>
+            </div>
+            <div>
+
+            </div>
+            @if (Model.Pet.Species != null) {
+                <div class="row py-1">
+                    <div class="col col-3 font-weight-bold" style="">Раса:</div>
+                    <div class="col col-8" style="text-align:left">@Model.Pet.Species.Name</div>
+                </div>
+            }
+            @if (Model.Pet.Breed != null) {
+                <div class="row py-1">
+                    <div class="col col-3 font-weight-bold" style="">Врста:</div>
+                    <div class="col col-8" style="text-align:left">@Model.Pet.Breed.Name</div>
+                </div>
+            }
+            @if(Model.Pet.Sex != null) {
+                <div class="row py-1">
+                    <div class="col col-3 font-weight-bold" style="">Пол:</div>
+                    <div class="col col-8" style="text-align:left">@(@Model.Pet.Sex == "M" ? "Mашко" : "Женско")</div>
+                </div>
+            }
+            @if(Model.Pet.DateOfBirth != null) {
+                <div class="row py-1">
+                    <div class="col col-3 font-weight-bold" style="">Датум на раѓање:</div>
+                    <div class="col col-8" style="text-align:left">@Model.Pet.DateOfBirth</div>
+                </div>
+            }
+            <div class="row py-1">
+                <div class="col col-3 font-weight-bold" style="">Старост:</div>
+                <div class="col col-8" style="text-align:left">@Model.Pet.AccurateAge</div>
+            </div>
+            @if(Model.Pet.Alergy != null) {
+                <div class="row py-1">
+                    <div class="col col-3 font-weight-bold" style="">Алергии:</div>
+                    <div class="col col-8" style="text-align:left">@Model.Pet.Alergy</div>
+                </div>
+            }
+            @if(!Model.Pet.LastCheckup.HasValue) {
+                <div class="row py-1">
+                    <div class="col col-3 font-weight-bold" style="">Последна посета:</div>
+                    <div class="col col-8" style="text-align:left">@Model.Pet.LastCheckup</div>
+                </div>
+            }
+            
+            @if(Model.Pet.ChipNumber != null) {
+                <div class="row py-1">
+                    <div class="col col-3 font-weight-bold" style="">Број на чип:</div>
+                    <div class="col col-8" style="text-align:left">@Model.Pet.ChipNumber</div>
+                </div>
+            }
+            
+        </div>
+        <div class="col" style="width: 50%">
+            <h3>Податоци за сопственик</h3>
+            <div class="row py-1">
+                <div class="col col-4 font-weight-bold" style="text-align:left">Ине и преиме</div>
+                <div class="col col-8" style="text-align:left">@Model.Owner.Name</div>
+            </div>
+            @if(!string.IsNullOrEmpty(Model.Owner.Address))
+            {
+                <div class="row py-1">
+                    <div class="col col-4 font-weight-bold" style="">Адреса</div>
+                    <div class="col col-8" style="text-align:left">@Model.Owner.Address</div>
+                </div>
+            }
+            @if(!string.IsNullOrEmpty(Model.Owner.Location))
+            {
+                <div class="row py-1">
+                    <div class="col col-4 font-weight-bold" style="">Место</div>
+                    <div class="col col-8" style="text-align:left">@Model.Owner.Location</div>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.Owner.PhoneNumber))
+            {
+                <div class="row py-1">
+                    <div class="col col-4 font-weight-bold" style="">Тел. број</div>
+                    <div class="col col-8" style="text-align:left">@Model.Owner.PhoneNumber</div>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.Owner.Municipality))
+            {
+                <div class="row py-1">
+                    <div class="col col-4 font-weight-bold" style="">Општина</div>
+                    <div class="col col-8" style="text-align:left">@Model.Owner.Municipality</div>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.Owner.Email))
+            {
+                <div class="row py-1">
+                    <div class="col col-4 font-weight-bold" style="">Емаил</div>
+                    <div class="col col-8" style="text-align:left">@Model.Owner.Email</div>
+                </div>
+            }
+              @if (!string.IsNullOrEmpty(Model.Owner.SSN))
+            {
+                <div class="row py-1">
+                    <div class="col col-4 font-weight-bold" style="">ЕМБГ</div>
+                    <div class="col col-8" style="text-align:left">@Model.Owner.SSN</div>
+                </div>
+            }
+
+
+        </div>
+    </div>
+    <hr />
+    @{
+        var allCheckups = Model.Checkups.Concat(Model.Vaccinations).Concat(Model.SurgicalInterventions).Concat(Model.ChipInsertionCheckups).OrderBy(c => c.Date).ToList();
+
+        
+    }
+    @foreach(var checkup in allCheckups)
+    {
+        <div class="container" style="page-break-inside:avoid;">
+            <div class="row mb-4">
+                <div class="col col-6" style="font-size: 24px">
+                    <label class="font-weight-bold">Датум:&nbsp;</label>@checkup.Date.Value.ToShortDateString()
+                </div>
+                <div class="col col-6" style="font-size: 24px">
+                    <label class="font-weight-bold">Услуга:&nbsp;</label>
+                    @{
+                        var ct = "";
+
+                        switch (checkup.CheckupType)
+                        {
+                            case "Vakcinacija":
+                                ct = "Вакцинација";
+                                break;
+                            case "Lečenje":
+                                ct = "Лечење";
+                                break;
+                            case "Čipovanje":
+                                ct = "Чипување";
+                                break;
+                            case "Hirurgija":
+                                ct = "Хирургија";
+                                break;
+                        }
+                    }
+                    @ct
+                </div>
+            </div>
+            <div >
+                @if (!string.IsNullOrEmpty(checkup.Anamnesis))
+                {
+                    <div class="row py-1">
+                        <div class="col col-2 font-weight-bold">Анамнеза:
+                    </div>
+                        <div class="col col-10">@checkup.Anamnesis</div>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(checkup.ClinicalPicture))
+                {
+                    <div class="row py-1">
+                        <div class="col col-2 font-weight-bold">Клиничка слика:</div>
+                        <div class="col col-10">@checkup.ClinicalPicture</div>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(checkup.Diagnosis))
+                {
+                    <div class="row py-1">
+                        <div class="col col-2 font-weight-bold">Дијагноза:</div>
+                        <div class="col col-10">@checkup.Diagnosis </div>
+                    </div>
+
+                }
+                @if (!string.IsNullOrEmpty(checkup.Advice))
+                {
+                    <div class="row py-1">
+                        <div class="col col-2 font-weight-bold">Препорака:</div>
+                        <div class="col col-10">@checkup.Advice</div>
+                    </div>
+                }
+                <div class="col col-2 font-weight-bold py-1">Терапија:</div>
+
+                @if (!string.IsNullOrEmpty(checkup.Therapy))
+                {
+                    <div class="row py-1" >
+                        <div class="col col-10">@checkup.Therapy</div>
+                    </div>
+                }
+          
+                @if (checkup.CheckupDetails.Any())
+                {
+                    foreach (var item in checkup.CheckupDetails)
+                    {
+                        <div class="row px-5">
+                            @item.Amount @item.Uom, @item.MedicamentName, @item.MedicamentApplication
+                        </div>
+                    }
+                }
+                <hr />
+            </div>
+
+          
+        </div>
+
+    }
+</div>

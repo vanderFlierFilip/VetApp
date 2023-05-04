@@ -1,0 +1,132 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+ 
+    @model ChipInsertionCheckupViewModel
+    ViewData["Title"] = $"Чипување на {@Model.Pet.Name}";
+}
+
+<link rel="stylesheet" href="~/lib/bootstrap-datepicker/bootstrap-datepicker.css" />
+<link rel="stylesheet" href="~/css/custom-tooltip.css" />
+<partial name="_SubHeader" view-data="ViewData"></partial>
+<partial name="_CheckupSubHeader" model="@Model"></partial>
+<form id="chipInsertionForm" asp-action="SaveChipInsertion">
+    <div id="PlaceHolderHere"> </div>
+
+    <input hidden asp-for="OwnerId" />
+    <input hidden asp-for="PetId" />
+    <div class="container">
+        <div class="row">
+            <div class="card w-100 shadow bg-white rounded">
+                <div class="card-body">
+                    <h5>Терапија</h5>
+                    <div class="row">
+                        <div class="col">
+                            @Html.Partial("_CheckupMedicamentsPartial", @Model.CheckupDetailViewModel)
+                        </div>
+                    </div>
+
+                    <div id="addAddMoreDiv"></div>
+                    <a id="add_row" class="btn btn-primary float-right">Додади ред</a>
+                    <br />
+                    <br />
+
+                </div>
+            </div>
+            <div class="card w-100 px-2 py-5 mt-4 shadow bg-white rounded">
+                <div class="row">
+                    <div class="col-12">
+                        <label>Број на чип</label>
+                        <input class="form-control" asp-for="ChipNumber" />
+
+                        <span asp-validation-for="ChipNumber" class="text-danger"></span>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card w-100 px-2 py-3 mt-4 shadow bg-white rounded">
+                <div class="row ">
+                    <div class="col-3">
+                        <div class="row">
+                            <div class="col-2">
+                                <i id="hideTotalBtn" class="fa fa-eye-slash"></i>
+                            </div>
+                            <div class="col-10">
+                                <div class="hidden" id="totalPrice"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col px-3">
+                        <div class="form-inline justify-content-end pr-4">
+                            <label class="mr-5">Наплатено: </label>
+                            <input type="number" class="form-control mr-auto p-2 w-50" asp-for="PaidSum">
+                            <button type="submit" class="btn btn-success">
+                                Зачувај
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</form>
+@section Scripts {
+    <script src="~/lib/bootstrap-datepicker/bootstrap-datepicker.js"></script>
+    <script src="~/lib/bootstrap-datepicker/bootstrap-datepicker.mk.js"></script>
+    <script src="~/js/customTooltip.js"></script>
+    <script>
+
+        $(document).ready(function () {
+
+            $('#add_row').on('click', function () {
+                $.ajax({
+                    url: '@Url.Action("AddCheckupDetailPartial", "CheckupMedicamentsHelper")',
+                    type: 'GET',
+                    data: {
+                    },
+                    success: function (result) {
+                        $('#addAddMoreDiv').append(result);
+
+                    },
+                    error: function () {
+                    }
+                });
+            })
+
+
+
+        });
+        $('#datepicker').datepicker({
+            language: "mk",
+            autoclose: true,
+            format: 'mm/dd/yyyy',
+            startDate: '+3d',
+        });
+
+        $('#diagnosisSelect').on('change', (e) => {
+            $('#diagnosisValue').html(e.target.value);
+        })
+
+
+        $('#hideTotalBtn').on('click', () => {
+            let val = $('#chipInsertionForm').serializeArray();
+            $.ajax({
+                method: 'POST',
+                url: '@Url.Action("GetTotalAmount", "CheckupMedicamentsHelper")',
+                data: val,
+                success: (data) => {
+                    $('#totalPrice').html(data + " ден")
+                    $('#totalPrice').toggleClass('hidden');
+                }
+            })
+        })
+
+    </script>
+}
+
+
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>

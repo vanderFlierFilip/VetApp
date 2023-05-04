@@ -1,0 +1,109 @@
+﻿@*
+  For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+  @model EditOwnerViewModel
+}
+
+<div class="row navbar navbar-light bg-light mb-3">
+  <h3>Измени податоци за сопственик @Model.Owner.FullName</h3>
+</div>
+<div id="modalPlaceholder"></div>
+<div class="container-fluid px-5">
+  <div class="row">
+    <div class="form-group col-3">
+      <form method="post" asp-action="UpdateOwner">
+        @Html.HiddenFor(model => model.Owner.Id)
+         
+        @Html.HiddenFor(model => model.Owner.Pets)
+
+        <label class="col col-form-label font-weight-bold">Име и презиме:</label>
+        <div class="col">
+          <input type="text" class="form-control" asp-for="Owner.FullName">
+        </div>
+        <label class="col col-form-label font-weight-bold">Адреса на живеење:</label>
+        <div class="col">
+          <input type="text" class="form-control" asp-for="Owner.Address">
+        </div>
+        <label class="col col-form-label font-weight-bold">Град:</label>
+        <div class="col">
+          <input type="text" class="form-control" asp-for="Owner.Location">
+        </div>
+        <label class="col col-form-label font-weight-bold">Општина:</label>
+        <div class="col">
+          <input type="text" class="form-control" asp-for="Owner.Municipality">
+        </div>
+        <label class="col col-form-label font-weight-bold">Телефонски број</label>
+        <div class="col">
+          <input type="text" class="form-control" asp-for="Owner.PhoneNumber">
+        </div>
+        <label class="col col-form-label font-weight-bold">ЕМБГ:</label>
+        <div class="col">
+          <input type="text" class="form-control" asp-for="Owner.SSN">
+        </div>
+        <hr />
+        <div class="col mt-2">
+          <input type="submit" class="btn btn-success" value="Зачувај" />
+          <a class="btn btn-danger" href="javascript:history.go(-1)">Назад</a>
+        </div>
+
+      </form>
+    </div>
+    <div class="col-9 px-5">
+      <div class="col-12 ">
+        <button class="btn btn-primary mb-3 mr-5 float-right" data-toggle="modal" data-target="#addNewPetModal"
+          data-url="@Url.Action("AddNewPet", new {ownerId=@Model.Owner.Id})"> Додади нов </button>
+        <h5>Миленици</h5>
+        <partial name="_CRUDPetsTablePartial" model="@Model.Owner.Pets"></partial>
+      </div>
+
+    </div>
+  </div>
+  
+
+</div>
+
+<script src="~/lib//jquery/dist/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+  $(document).ready(function () {
+    $("#animalType").change(function () {
+      getTypeBreedsByTypeId();
+    });
+    $(document).ready(function () {
+      $(".datepicker").datepicker("show");
+    });
+    var getTypeBreedsByTypeId = function () {
+      $.ajax({
+        url: '@Url.Action("GetAnimalTypeBreeds")',
+        type: 'GET',
+        data: {
+          animalTypeId: $('#animalType').val(),
+        },
+        success: function (data) {
+          $('#breed').find('option').remove()
+          $(data).each(
+            function (index, item) {
+              $('#breed').append('<option value="' + item.id + '">' + item.name + '</option>')
+            });
+        },
+        error: function () {
+        }
+      });
+    }
+  })
+
+  $(function () {
+    var placeholderElement = $('#modalPlaceholder');
+
+    $('button[data-toggle="modal"]').click(function (event) {
+      let url = $(this).data('url');
+      $.get(url).done(function (data) {
+        jQuery.noConflict();
+        placeholderElement.html(data);
+        placeholderElement.find('.modal').modal('show');
+      });
+    })
+  })
+</script>

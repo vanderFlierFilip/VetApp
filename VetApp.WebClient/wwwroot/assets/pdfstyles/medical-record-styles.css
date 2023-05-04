@@ -1,0 +1,13 @@
+﻿.row {
+    display: flex;
+    flex-direction: row;
+}
+
+.col {
+    justify-content: center;
+}
+
+.title {
+    background-color:red;
+    text-align: center;
+}

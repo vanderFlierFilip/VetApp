@@ -1,0 +1,73 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<script>
+    $(".removeDiv").click(function () {
+        $(this).parents("#removeAddMoreDiv").remove();
+    });
+    function getAllElementsAsArray(selector) {
+        return Array.prototype.slice.call(document.querySelectorAll(selector));
+    }
+    function getValuesFromElemets(selector) {
+        return getAllElementsAsArray(selector).map(el => el.value)
+    }
+    document.querySelectorAll("#medicament").forEach(el => {
+        el.addEventListener('change', (e) => {
+            let medicamentId = parseInt(e.target.value);
+            const uomInputs = getAllElementsAsArray("#uomValue")
+            const uoms = getAllElementsAsArray("#uom")
+            const medInputsArray = getAllElementsAsArray("#medicament");
+            const totalPricesInputs = getAllElementsAsArray("#totalPrice");
+            const priceInputs = getAllElementsAsArray("#priceInput");
+            const singlePriceArray = getAllElementsAsArray("#singlePrice")
+            const amountInputs = getAllElementsAsArray("#amount")
+            const medApplicationInputs = getAllElementsAsArray("#medApplication");
+            
+            let idx = medInputsArray.indexOf(el);
+            let currentEl = totalPricesInputs[idx];
+            let currentPriceDisplay = priceInputs[idx];
+            let currentSinglePrice = singlePriceArray[idx];
+            let currentAmountInput = amountInputs[idx];
+            let currentMedApplication = medApplicationInputs[idx];
+            const currUomInput = uomInputs[idx];
+            const currUom = uoms[idx];
+            if (!isNaN(medicamentId)) {
+                $.ajax({
+                    url: '@Url.Action("GetMedicamentPrice", "CheckupMedicamentsHelper")',
+                    type: 'GET',
+                    data: {
+                        medicamentId: medicamentId
+                    },
+                    success: function (data) {
+                        $(currentPriceDisplay).val(parseInt(data));
+                        $(currentAmountInput).val(1);
+                        currentAmountInput.disabled = false;
+                        currentMedApplication.disabled = false;
+                    },
+                    error: function () {
+                    }
+                })
+
+                $.ajax({
+                    url: '@Url.Action("GetMedicamentUom", "CheckupMedicamentsHelper")',
+                    type: 'GET',
+                    data: {
+                        id: medicamentId
+                    },
+                    success: function (data) {
+                        $(currUomInput).val(data);
+                        $(currUom).html(data.toString());
+                    }
+
+
+                })
+            }
+         
+        }
+        )
+    })
+
+</script>

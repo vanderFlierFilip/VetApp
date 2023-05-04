@@ -1,0 +1,179 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ДВМ Јасминка</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/minty-bootstrap.css" />
+    @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap-theme.min.css"/>*@
+    <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/lib/toastr/css/toastr.min.css">
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/toastr/js/toastr.min.js"></script>
+    <script src="~/lib/bootbox/bootbox.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+
+</head>
+<body>
+    <header>
+        <nav class="shadow navbar navbar-light bg-primary ">
+                  <button class="navbar-toggler" id="menu-toggle">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    Дома
+                </a>    
+                <div class="col-6">
+                    @await Component.InvokeAsync("SearchPet")
+                </div>
+                <div class="dropdown">
+                      <button class="btn btn-outline-primary dropdown-toggle text-white" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                         <i class="fa fa-gear"></i>
+                      </button>
+                      <div class="dropdown-menu w-75" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item navbar-brand" asp-controller="Settings" asp-action="Migrations">Миграции</a>
+                      </div>
+                </div>
+          
+            </div>
+        </nav>
+    </header>
+
+  <div class="wrapper">
+       <div id="sidebar" class="border-right">
+        <div class="sidebar-header">
+        </div>
+
+        <ul class="list-unstyled container px-0">
+            <li class="active">
+                <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                        <i class="fa fa-ambulance"></i>
+                    
+                    Амбуланта
+                </a>
+                <ul class="collapse list-unstyled" id="homeSubmenu">
+                    <li>
+                        <a asp-area=""asp-controller="PetDetailsPage" asp-action="PetDetails" asp-route-ownerId="1" asp-route-petId="2" class="text-decoration-none">Вакцинација</a>
+                    </li>
+                    <li>
+                        <a asp-area=""asp-controller="Vaccination" asp-action="Vaccination"  class="text-decoration-none">Вакцинација</a>
+                    </li>
+                    <li>
+                        <a href="#">Чипување</a>
+                    </li>
+                       <li>
+                        <i class="fa fa-id-card"></i>
+                        
+                        <a asp-area="" asp-controller="OwnersAndPetsManagement" asp-action="Owners" asp-route-pageNumber=1>Сопственици</a>
+                    </li>
+                   
+                </ul>
+            </li>
+            <li class="">
+                <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                    <i class="fa fa-copy"></i>
+                    Магацин 
+                </a>
+                <ul class="collapse  list-unstyled" id="pageSubmenu">
+                 
+                    <li>
+                        <i class="fa fa-address-book" aria-hidden="true"></i>
+                        <a asp-area="" asp-controller="Management" asp-action="Suppliers" asp-route-pageNumber=1>Добавувачи</a>
+                    </li>
+                    <li>
+                        <i class="fa fa-archive"></i>
+                        <a asp-area="" asp-controller="Inventory" asp-action="Inventory" asp-route-pageNumber=1 >Инвентар</a>
+                    </li>
+                   <li>
+                        <i class="fa fa-truck"></i>
+                        <a asp-area="" asp-controller="Inventory" asp-action="InventoryEntry" >Прием</a>
+                    </li>
+                     <li>
+                        <i class="fa fa-medkit" aria-hidden="true"></i>
+                        <a asp-area="" asp-controller="Medicaments"
+                        
+                         asp-action="Medicaments" asp-route-pageNumber=1>Лекови и материјали</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+    </div>
+    <div id="content">
+            <div class="container-fluid">
+                @RenderBody()
+            </div>
+    </div>
+        
+   </div>
+
+   @* 
+    <div class="container-fluid">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>*@
+
+    @*<footer id="footer" class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2022 - VDMJasminka.WebClient - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>*@
+    <style>
+        #content {
+            height: 100vh;
+            background-color: #f9f9f9;
+        }
+        #footer {
+            height: 5vh;
+        }
+        #sidebar {
+            z-index: 1;
+            position: absolute;
+            width: 200px;
+            height: 100vh;
+            padding-top: 12px;
+            background-color: white;
+            
+        }
+        #sidebar li {
+            padding-left: 15%;
+            margin: 12px 0;
+            width: 100%;
+        }
+        #sidebar ul {
+            text-decoration: none;
+            color: #78c2ad;
+        }
+        #sidebar a {
+            text-decoration: none;
+            color: #78c2ad;
+        }
+
+        #sidebar a :hover{
+            color: #007bff;
+            text-decoration: none;
+        }
+        #content {
+            position: absolute;
+            width: 100%;
+            padding-left: 200px;
+        }
+        .toast { max-width: 100%; }
+
+
+    </style>
+
+    <script>
+        $("#menu-toggle").click(function(e) {
+            e.preventDefault();
+            $("#wrapper").toggleClass("toggled")
+        })
+    </script>
+    @RenderSection("Scripts", false)
+</body>
+</html>

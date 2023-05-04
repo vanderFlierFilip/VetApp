@@ -1,0 +1,68 @@
+﻿@using VDMJasminka.Core.Entities
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    @model OwnerModel
+}
+<div class="row navbar navbar-light bg-light mb-3">
+    <h3>Сопственик @Model.FullName</h3>
+</div>
+    <a href="javascript:history.go(-1)" class="btn btn-danger">Назад</a>
+<div class="row p-4">
+
+    <div class="form-group col-6">
+        <div class="form-group row">
+             <label for="staticEmail" class="col col-form-label font-weight-bold">Име и презиме:</label>
+        <div class="col">
+            @Html.TextBoxFor(model => model.FullName, new {@class="form-control-plaintext", @readonly="readonly"})
+        </div>
+        </div>
+        <div class="form-group row">
+            <label for="staticEmail" class="col col-form-label font-weight-bold">Адреса на живеење:</label>
+        <div class="col">
+          <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="@Model.Address"/>
+        </div>
+        </div>
+        <div class="form-group row">
+              <label for="staticEmail" class="col col-form-label font-weight-bold">Град:</label>
+        <div class="col">
+          <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="@Model.Location"/>
+        </div>
+        </div>
+        <div class="form-group row">
+              <label for="staticEmail" class="col col-form-label font-weight-bold">Општина:</label>
+        <div class="col">
+          <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="@Model.Municipality"/>
+        </div>
+        </div>
+        <div class="form-group row">
+             <label  class="col col-form-label font-weight-bold">Телефонски број</label>
+        <div class="col">
+          <input type="text" readonly class="form-control-plaintext" value="@Model.PhoneNumber"/>
+        </div>
+        </div>
+        <div class="form-group row">
+              <label for="staticEmail" class="col col-form-label font-weight-bold">ЕМБГ:</label>
+        <div class="col">
+          <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="@Model.SSN"/>
+        </div>
+        </div>
+        
+     </div>
+    <div class="col-9 px-3">
+   
+ </div>
+  <h5>Миленици</h5>
+     <partial name="_PetsTable" model="@Model.Pets"></partial>
+   @*     @if(!@Model.Pets.Any())
+        {
+            <div class="container mt-5">
+                <a class="btn btn-success" asp-action="EditOwner" asp-route-ownerId="@Model.Id"> 
+                    Промени 
+                </a>
+            </div>
+        }*@
+       
+</div>
+ 

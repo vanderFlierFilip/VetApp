@@ -1,0 +1,143 @@
+@using VDMJasminka.WebClient.Controllers.Inventory
+@model ResupplyDetailsViewModel
+@{
+    Layout = null;
+}
+@using HtmlHelpers.BeginCollectionItemCore;
+@{
+    //BeginCollectionItemCore already created in HtmlHelper.cs class
+}
+
+@using (Html.BeginCollectionItem("ResupplyDetailsList"))
+{
+    <!-------"AddMoreList"----- this is AddMoreViewModel List Object wich is define ViewModel file -->
+    <div id="removeAddMoreDiv" class="col-xs-12 col-sm-12 form-group">
+        <div class="row">
+            <div class="col">
+                <label for="MedicamentId">Лек/материјал</label>
+                <select asp-for="ResupplyDetails.MedicamentId" asp-items="@Model.Medicaments" class="form-control" id="medicament">
+                    <option>Одбери материјал</option>
+                </select>
+            </div>
+            <div class="col">
+                <label for="MedicamentId">Количина</label>
+
+                <input type="number" asp-for="ResupplyDetails.Amount" class="form-control" id="amount" min="1" value="1" />
+            </div>
+            <div class="col">
+                <label for="MedicamentId">Единечна цена</label>
+
+                <input hidden type="number" asp-for="ResupplyDetails.Price" id="priceInput">
+                
+                <p id="singlePrice"><span>0 ден</span></p>
+
+            </div>
+               <div class="col">
+                <label >Вкупно</label>
+                
+                <p  id="totalPrice"><span>0 ден</span></p>
+
+            </div>
+            
+            <div class="col">
+                <p style="font-size: 30px; color: red; text-align: left; cursor: pointer" class="removeDiv">&times;</p>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    $(".removeDiv").click(function () {
+        $(this).parents("#removeAddMoreDiv").remove();
+        InventoryDetailsTotal.state.recalculate()
+
+
+    });
+    function getAllElementsAsArray(selector) {
+        return Array.prototype.slice.call(document.querySelectorAll(selector));
+    }
+
+    function getValuesFromElemets(selector) {
+        return getAllElementsAsArray(selector).map(el => el.value)
+    }
+
+    document.querySelectorAll("#medicament").forEach(el => {
+
+        el.addEventListener('change', (e) => {
+            const medInputsArray = getAllElementsAsArray("#medicament");
+            const totalPricesInputs = getAllElementsAsArray("#totalPrice");
+            const priceInputs = getAllElementsAsArray("#priceInput");
+            const singlePriceArray = getAllElementsAsArray("#singlePrice")
+            const amountInputs = getAllElementsAsArray("#amount")
+
+
+            let medicamentId = parseInt(e.target.value);
+            let idx = medInputsArray.indexOf(el);
+            let currentEl = totalPricesInputs[idx];
+            let currentPriceDisplay = priceInputs[idx]; 
+            let currentSinglePrice = singlePriceArray[idx];
+            let currentAmountInput = amountInputs[idx];
+            $.ajax({
+                url: '@Url.Action("GetMedicamentPrice", "MedicamentInventory")',
+                type: 'GET',
+                data: {
+                    medicamentId: medicamentId
+                },
+                success: function (data) {
+                    $(currentEl).html(`${data.toFixed(2)} ден`);
+                    $(currentPriceDisplay).val(data);
+                    $(currentSinglePrice).html(`${data.toFixed(2)} ден`);
+                    $(currentAmountInput).val(1);
+                        let overallTotal = getValuesFromElemets("#totalPrice");
+
+                    InventoryDetailsTotal.state.recalculate()
+                },
+                error: function () {
+                }
+            })
+        })
+
+    })
+
+    document.querySelectorAll("#amount").forEach(el => {
+        el.addEventListener("change", (e) => {
+            const amountInputs = getAllElementsAsArray("#amount");
+            const medInputs = getAllElementsAsArray("#medicament");
+            const totalPricesInputs = getAllElementsAsArray("#totalPrice");
+
+            let amount = parseInt(e.target.value);
+            let idx = amountInputs.indexOf(el);
+            let currentEl = totalPricesInputs[idx];
+            let currentMedId = medInputs[idx].value;
+            
+            $.ajax({
+                url: '@Url.Action("GetMedicamentTotalPrice", "MedicamentInventory")',
+                type: 'GET',
+                data: {
+                    medicamentId: currentMedId,
+                    amount: e.target.value
+                },
+                success: function (data) {
+                    $(currentEl).html(`${data.toFixed(2)} ден`);
+
+                    InventoryDetailsTotal.state.recalculate()
+
+                    @* InventoryDetailsTotal.state.recalculate(overallTotal) *@
+
+                    
+                },
+                error: function () {
+                }
+            })
+
+
+        })
+
+
+    })
+
+
+
+
+
+</script>

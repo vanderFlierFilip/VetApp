@@ -1,0 +1,189 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    @model SurgeryViewModel
+    ViewData["Title"] = $"Операција на {Model.Pet.Name}";
+}
+<link  rel="stylesheet" href="~/lib/bootstrap-datepicker/bootstrap-datepicker.css"/>
+<link  rel="stylesheet" href="~/css/custom-tooltip.css"/>
+
+<partial name="_SubHeader" view-data="ViewData"></partial>
+<partial name="_CheckupSubHeader" model="@Model"></partial>
+<form id="surgeryForm" asp-action="SaveSurgery">
+    <div id="PlaceHolderHere"> </div>
+
+    <input hidden asp-for="OwnerId" />
+    <input hidden asp-for="PetId" />
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-3">
+                <div class="shadow bg-white rounded card px-3 py-2" style="background-color: #f8f9fa">
+                    <div class="row">
+                        <div class="col">
+                            <label>Анамнеза</label>
+                            <textarea class="form-control" asp-for="Anamnesis"></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label>Клиничка слика</label>
+                            <textarea class="form-control" asp-for="ClinicalPicture"></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label>Обдери Дијагноза</label>
+                            <select asp-items="@Model.Diagnoses" id="diagnosisSelect" class="form-control">
+                                <option value=""></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label>Дијагноза</label>
+                            <textarea class="form-control" asp-for="Diagnosis" id="diagnosisValue" data-type="info" data-toggle="tooltip" data-placement="top" ></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label>Хирушки зафат</label>
+                            <textarea class="form-control" asp-for="SurgicalIntervention"></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label>Лаб. анализа</label>
+                            <textarea class="form-control" asp-for="LabAnalysis"></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label>Препорака</label>
+                            <textarea class="form-control" asp-for="Advice"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-9">
+                <div class="card w-100 shadow bg-white rounded">
+                    <div class="card-body">
+                        <h5>Терапија</h5>
+                        <div class="row">
+                            <div class="col">
+                                @Html.Partial("_CheckupMedicamentsPartial", @Model.CheckupDetailViewModel)
+                            </div>
+                        </div>
+
+                        <div id="addAddMoreDiv"></div>
+                        <a id="add_row" class="btn btn-primary float-right">Додади ред</a>
+                        <br />
+                        <br />
+
+                    </div>
+                </div>
+                <div class="card w-100 px-2 py-5 mt-4 shadow bg-white rounded">
+                    <div class="row">
+                        <div class="col-6">
+                                <label>Препорачана терапија</label>
+                                <textarea class="form-control" asp-for="Therapy"></textarea>
+                        </div>
+                        <div class="col-6">
+                            <div class="col">
+                                <label>Контролен преглед закажан за:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <i class="fa fa-calendar"></i>
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control" id="datepicker" asp-for="NextControlCheckup">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card w-100 px-2 py-3 mt-4  shadow bg-white rounded">
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="row">
+                                <div class="col-2">
+                                    <i id="hideTotalBtn" class="fa fa-eye-slash"></i>
+                                </div>
+                                <div class="col-10">
+                                    <div class="hidden" id="totalPrice"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col px-3">
+                            <div class="form-inline justify-content-end pr-4">
+                                <label class="mr-5">Наплатено: </label>
+                                <input type="number" class="form-control mr-auto p-2 w-50" asp-for="PaidSum">
+                                <button type="submit" class="btn btn-success" >
+                                    Зачувај
+                                </button>
+                            </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+</form>
+@section Scripts {
+    <script src="~/lib/bootstrap-datepicker/bootstrap-datepicker.js"></script>
+    <script src="~/lib/bootstrap-datepicker/bootstrap-datepicker.mk.js"></script>
+    <script src="~/js/customTooltip.js"></script>
+    <script>
+
+        $(document).ready(function () {
+          
+            $('#add_row').on('click', function () {
+                $.ajax({
+                    url: '@Url.Action("AddCheckupDetailPartial", "CheckupMedicamentsHelper")',
+                    type: 'GET',
+                    data: {
+                    },
+                    success: function (result) {
+                        $('#addAddMoreDiv').append(result);
+
+                    },
+                    error: function () {
+                    }
+                });
+            })
+
+
+
+        });
+        $('#datepicker').datepicker({
+            language: "mk",
+            autoclose: true,
+            format: 'mm/dd/yyyy',
+            startDate: '+3d',
+        });
+
+        $('#diagnosisSelect').on('change', (e) => {
+            $('#diagnosisValue').html(e.target.value);
+        })
+
+
+        $('#hideTotalBtn').on('click', () => {
+            let val = $('#surgeryForm').serializeArray();
+            $.ajax({
+                method: 'POST',
+                url: '@Url.Action("GetTotalAmount", "CheckupMedicamentsHelper")',
+                data: val,
+                success: (data) => {
+                    $('#totalPrice').html(data + " ден")
+                    $('#totalPrice').toggleClass('hidden');
+                }
+            })
+        })
+
+    </script>
+}
+
+

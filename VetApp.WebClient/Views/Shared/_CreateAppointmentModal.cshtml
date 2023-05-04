@@ -1,0 +1,54 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    @model AddAppointmentViewModel
+}
+<link rel="stylesheet" href="~/lib/bootstrap-datetimepicker/bootstrap-datetimepicker.css"/>
+<form asp-action="CreateAppointment" method="post">
+    <div class="form-group">
+        <label>Вид на состанок</label>
+        <select asp-for="AppointmentType" class="form-control">
+            <option>Вакцинација</option>
+            <option>Лечење</option>
+            <option>Чипување</option>
+            <option>Операција</option>
+            <option>Друго</option>
+        </select>
+    </div>
+    <div>
+        @Html.Partial("_OwnerAndPetTypeahead", @Model.TypeaheadViewModel)
+    </div>
+    <div class="form-group">
+        <div class="form-group">
+            <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+                <input type="text" class="form-control datetimepicker-input" data-target="#datetimepicker1" />
+                <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="from">From</label>
+        <input type="text" class="form-control" id="timepicker" asp-for="Start">
+    </div>
+    <div class="form-group">
+        <label for="to">to</label>
+    </div>
+   
+  
+</form>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="~/lib/moment/moment.js"></script>
+<script src="~/lib/bootstrap-datetimepicker/bootstrap-datetimepicker.js"></script>
+<script>
+    $(function () {
+        $('#datetimepicker1').datetimepicker();
+    });
+
+ 
+
+   
+</script>

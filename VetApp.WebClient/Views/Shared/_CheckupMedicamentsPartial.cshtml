@@ -1,0 +1,54 @@
+@model CheckupDetailViewModel
+
+@{
+    Layout = null;
+}
+@using HtmlHelpers.BeginCollectionItemCore;
+@{
+    var uomUrl = @Url.Action("GetMedicamentUom");
+    //BeginCollectionItemCore already created in HtmlHelper.cs class
+}
+
+@using (Html.BeginCollectionItem("CheckupDetailViewModels"))
+{
+    <!-------"AddMoreList"----- this is AddMoreViewModel List Object wich is define ViewModel file -->
+    <div id="removeAddMoreDiv" class="col form-group">
+        <div class="row">
+            <div class="col-4">
+                <label for="MedicamentId">Лек/материјал</label>
+                <select asp-for="CheckupDetails.MedicamentId" asp-items="@Model.Medicaments" class="form-control" id="medicament">
+                    <option>Одбери лек</option>
+                </select>
+                <span asp-validation-for="CheckupDetails.MedicamentId" class="text-danger"></span>
+            </div>
+            <div class="col-2">
+                <label for="MedicamentId">Количина</label>
+                <input type="number" asp-for="CheckupDetails.Amount" class="form-control" id="amount" min="0.01" value="1" step="0.01" />
+            </div>
+            <div class="col-2">
+                <label for="">Мерна единица</label>
+                <input type="text" asp-for="CheckupDetails.Uom" hidden id="uomValue">
+                <span asp-validation-for="CheckupDetails.Uom" class="text-danger"></span>
+                <p id="uom" ></p>
+            </div>
+            <div class="col-2">
+                <label for="">Апликација</label>
+                <select asp-for="CheckupDetails.MedicamentApplication" asp-items="@Model.MedApplications"
+                class="form-control" id="medApplication">
+                </select>
+
+                <input hidden type="number" asp-for="CheckupDetails.Price" id="priceInput">
+            </div>
+            <div class="col">
+                <p style="font-size: 30px; color: red; text-align: left; cursor: pointer" class="removeDiv">&times;</p>
+            </div>
+        </div>
+    </div>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    @Html.Partial("_CheckupMedicamentsPartialScripts")  
+
+}
+
+

@@ -1,0 +1,216 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model PagedList<OwnerModel>
+@{
+
+    ViewData["Title"] = "Сопственици";
+    var pagedList = (IPagedList)ViewBag.PageList;
+}
+<link rel="stylesheet" href="~/lib/bs-stepper/dist/css/bs-stepper.min.css">
+
+<div class="row navbar navbar-light bg-light mb-3">
+    <h3>Сопственици</h3>
+</div>
+<div id="modalPlaceholder"></div>
+<div class="row-12">
+    <div class="row">
+        <form asp-action="Owners" method="get" class="col-6">
+            <div class="form-actions mb-2">
+                <div class="col-6">
+                    <input hidden name="pageNumber" value="1" />
+                    <p>
+                        Пребарај по име: <input type="text" name="SearchString" value="@ViewBag.Search"
+                                                class="form-control" />
+                    </p>
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">Пребарај</button> |
+                    @*<button type="submit" value="Search" class="btn btn-primary" /> |*@
+                    <a asp-action="Owners" asp-route-pageNumber=1>Прикажи цела листа</a>
+                </div>
+
+            </div>
+
+        </form>
+        <div class="col-12 ">
+            <button class="btn btn-primary mb-3 mr-5 float-right" onclick="addOwner()"> Додади нов </button>
+        </div>
+    </div>
+
+
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>
+                    @Html.ActionLink("Име", "Owners", new { sortOrder = ViewBag.NameSortParam, pageNumber =
+                    ViewBag.PageNumber , searchString = ViewBag.Search })
+                </th>
+                <th>
+                    Адреса
+                </th>
+                <th>
+                    Телефонски број
+                </th>
+                <th>
+                    Локација
+                </th>
+                <th>
+                    Општина
+                </th>
+                <th>
+                    Акции
+
+                </th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (OwnerModel b in ViewBag.PageList)
+            {
+                <tr id="row_@b.Id">
+                    <td>
+                        @Html.DisplayFor(modelItem => b.FullName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => b.Address)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => b.PhoneNumber)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => b.Location)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => b.Municipality)
+                    </td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <a class="btn btn-primary btn-sm" asp-action="OwnerDetails" asp-route-id="@b.Id">
+                                Детали
+                            </a>
+
+                            <a class="btn btn-success btn-sm" asp-action="EditOwner" asp-route-ownerId="@b.Id">
+                                Промени
+                            </a>
+                            <button onclick="DeleteOwner(@b.Id)"
+                                class="btn btn-danger btn-sm rounded-0 rounded-0">
+                                Избриши
+                            </button>
+
+                        </div>
+                    </td>
+
+                </tr>
+
+            }
+            <input type="text" hidden id="hiddenId" />
+
+        </tbody>
+
+    </table>
+    @Html.PagedListPager(
+    pagedList,
+    pageNumber => Url.Action("Owners", new { pageNumber , searchString = ViewBag.Search, sortOrder =
+    ViewBag.CurrentSort,}),
+    new PagedListRenderOptions{
+    PageClasses = new string[] { "page-link" },
+    UlElementClasses = new string[] { "pagination" },
+    LiElementClasses = new string[] { "page-item" },
+    DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+    DisplayLinkToFirstPage = PagedListDisplayMode.IfNeeded,
+    DisplayLinkToLastPage = PagedListDisplayMode.IfNeeded
+    }
+    )
+        <script src="~/lib/bootbox/bootbox.min.js"></script>
+
+        <script>
+            var addOwner = function () {
+                $.ajax({
+                    type: "GET",
+                    url: "/OwnersAndPetsManagement/CreateOwner",
+                    success: function (result) {
+                        bootbox.dialog({
+                            size: "large",
+                            message: result,
+                        })
+                    }
+                })
+
+            }
+            var DeleteOwner = function (id) {
+                bootbox.confirm({
+                    message: "Дали сте сигурни?",
+                    buttons: {
+                        confirm: {
+                            label: 'Да',
+                            className: 'btn-success',
+                        },
+                        cancel: {
+                            label: "Не",
+                            className: "btn-danger",
+                        },
+
+                    },
+                    callback: (result) => {
+                        if (result) {
+                            deleteOwner(id);
+
+                        }
+                    }
+                })
+            }
+
+            var deleteOwner = function (ownerId) {
+                $.ajax({
+                    type: "POST",
+                    url: "/OwnersAndPetsManagement/DeleteOwner",
+                    data: { ownerId: ownerId },
+                    success: function (result) {
+                        $("#row_" + ownerId).remove();
+                    }
+                })
+            }
+
+            $(function () {
+                var placeholderElement = $('#modalPlaceholder');
+
+                $('button[data-toggle="modal"]').click(function (event) {
+                    let url = $(this).data('url');
+                    $.get(url).done(function (data) {
+                        jQuery.noConflict();
+                        placeholderElement.html(data);
+                        placeholderElement.find('.modal').modal('show');
+                    });
+                })
+            })
+        </script>
+
+
+        @* <nav aria-label="Page navigation example">
+    <ul class="pagination">
+    <li class="page-item">
+    <a class="page-link" href="#" aria-label="Previous">
+    <span aria-hidden="true">&laquo;</span>
+    <span class="sr-only">Previous</span>
+    </a>
+    </li>
+    @for (var i = 1; i <= Model.TotalPages; i++)
+    {
+    <li class="page-item"><a class="page-link" asp-cotnroller="Owners" asp-action="Owners"
+    asp-route-pageNumber="@(i)">@i</a></li>
+
+    }
+    <li class="page-item">
+    <a class="page-link" href="#" aria-label="Next">
+    <span aria-hidden="true">&raquo;</span>
+    <span class="sr-only">Next</span>
+    </a>
+    </li>
+    </ul>
+    </nav>*@
